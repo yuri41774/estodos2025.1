@@ -313,6 +313,11 @@
                                     Questionário
                                 </a>
                             </li>
+                            <li>
+                                <a href="#profile-page" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Meu Perfil
+                                </a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -652,6 +657,14 @@
                         </div>
                     </section>
 
+                    <!-- Seção Meu Perfil -->
+                    <section id="profile-page" class="mb-8 pb-4" aria-labelledby="profile-page-heading">
+                        <h2 id="profile-page-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">Meu Perfil</h2>
+                        <div id="profile-content" class="text-gray-700">
+                            <p>Carregando seus resultados anteriores...</p>
+                        </div>
+                    </section>
+
                 </div>
 
                 <!-- Rodapé da Seção Direita -->
@@ -733,6 +746,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         // Configuração do Firebase (substitua pelos seus dados reais)
         const firebaseConfig = {
@@ -749,12 +763,17 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const auth = getAuth(app); // Obtém a instância de autenticação
+        const db = getFirestore(app); // Obtém a instância do Firestore
+
+        // Variável global para o ID da aplicação (usada para caminhos no Firestore)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
 
         // Elementos do DOM relacionados ao modal de autenticação
         const authModal = document.getElementById('authModal');
         const loginButton = document.getElementById('loginButton');
         const closeAuthModalButton = document.getElementById('closeAuthModalButton');
-        const loginFormAuth = document.getElementById('loginFormAuth'); // Renomeado para evitar conflito com quizForm
+        const loginFormAuth = document.getElementById('loginFormAuth');
         const registerForm = document.getElementById('registerForm');
         const showRegisterFormLink = document.getElementById('showRegisterForm');
         const showLoginFormLink = document.getElementById('showLoginForm');
@@ -765,6 +784,7 @@
         const welcomeScreen = document.getElementById('welcomeScreen');
         const mainContent = document.querySelector('main');
         const accessLoginButton = document.getElementById('accessLoginButton');
+        const profileContentDiv = document.getElementById('profile-content');
 
 
         // Listener para o estado de autenticação do usuário
@@ -772,17 +792,19 @@
             if (user) {
                 // Usuário está logado
                 loginButton.textContent = `Olá, ${user.displayName || user.email}`;
-                loginButton.removeEventListener('click', openAuthModal); // Remove o listener de abrir modal
-                loginButton.addEventListener('click', signOutUser); // Adiciona listener para fazer logout
+                loginButton.removeEventListener('click', openAuthModal);
+                loginButton.addEventListener('click', signOutUser);
                 welcomeScreen.classList.add('hidden'); // Esconde a tela de boas-vindas
                 mainContent.classList.add('show'); // Mostra o conteúdo principal
+                loadQuizResults(user.uid); // Carrega os resultados do questionário para o perfil
             } else {
                 // Usuário está deslogado
                 loginButton.textContent = 'Login';
-                loginButton.removeEventListener('click', signOutUser); // Remove o listener de fazer logout
-                loginButton.addEventListener('click', openAuthModal); // Adiciona listener para abrir modal
+                loginButton.removeEventListener('click', signOutUser);
+                loginButton.addEventListener('click', openAuthModal);
                 welcomeScreen.classList.remove('hidden'); // Mostra a tela de boas-vindas
                 mainContent.classList.remove('show'); // Esconde o conteúdo principal
+                profileContentDiv.innerHTML = '<p>Faça login para ver seus resultados.</p>'; // Limpa o perfil
             }
         });
 
@@ -800,22 +822,20 @@
         // Função para fazer logout
         function signOutUser() {
             signOut(auth).then(() => {
-                // Logout bem-sucedido
-                // A tela de boas-vindas será mostrada automaticamente pelo onAuthStateChanged
+                // Logout bem-sucedido, onAuthStateChanged vai lidar com a UI
             }).catch((error) => {
-                // Erro ao fazer logout
                 console.error("Erro ao fazer logout:", error);
-                // Implementar feedback de erro adequado, sem alert()
+                // Feedback de erro para o usuário (sem alert)
             });
         }
 
         // Listeners para o modal de autenticação
-        loginButton.addEventListener('click', openAuthModal); // Configuração inicial, será substituída por onAuthStateChanged
+        loginButton.addEventListener('click', openAuthModal);
         accessLoginButton.addEventListener('click', openAuthModal); // Botão "Fazer Login para Aceder" na tela de boas-vindas
 
         closeAuthModalButton.addEventListener('click', () => {
             authModal.classList.remove('show');
-            loginButton.focus(); // Retorna o foco para o botão de login
+            loginButton.focus();
         });
         authModal.addEventListener('click', (event) => {
             if (event.target === authModal) {
@@ -830,7 +850,7 @@
             authModalTitle.textContent = 'Cadastro';
             loginFormAuth.classList.add('hidden');
             registerForm.classList.remove('hidden');
-            registerMessageDiv.textContent = ''; // Limpa mensagens
+            registerMessageDiv.textContent = '';
             document.getElementById('registerEmail').focus();
         });
 
@@ -839,7 +859,7 @@
             authModalTitle.textContent = 'Login';
             loginFormAuth.classList.remove('hidden');
             registerForm.classList.add('hidden');
-            loginMessageDiv.textContent = ''; // Limpa mensagens
+            loginMessageDiv.textContent = '';
             document.getElementById('loginEmail').focus();
         });
 
@@ -848,7 +868,7 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            loginMessageDiv.textContent = ''; // Limpa mensagens anteriores
+            loginMessageDiv.textContent = '';
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -856,8 +876,7 @@
                 loginMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
-                }, 1000); // Fecha o modal após 1 segundo
+                }, 1000);
             } catch (error) {
                 let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
@@ -882,8 +901,7 @@
                 loginMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
-                }, 1000); // Fecha o modal após 1 segundo
+                }, 1000);
             } catch (error) {
                 let errorMessage = "Erro ao fazer login com Google.";
                 if (error.code === 'auth/popup-closed-by-user') {
@@ -905,7 +923,7 @@
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            registerMessageDiv.textContent = ''; // Limpa mensagens anteriores
+            registerMessageDiv.textContent = '';
 
             if (password !== confirmPassword) {
                 registerMessageDiv.textContent = "As senhas não coincidem.";
@@ -919,8 +937,7 @@
                 registerMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
-                }, 1000); // Fecha o modal após 1 segundo
+                }, 1000);
             } catch (error) {
                 let errorMessage = "Erro ao cadastrar.";
                 if (error.code === 'auth/email-already-in-use') {
@@ -936,127 +953,206 @@
             }
         });
 
-        // Lógica do questionário (mantida do código anterior)
-        document.getElementById('quizForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Previne o envio padrão do formulário
+        // Lógica do questionário
+        document.getElementById('quizForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-            const answers = {
-                q1: "Definir regras e prover medidas rápidas e eficazes para os processos críticos de TI em casos de incidentes graves ou desastres, garantindo a continuidade da prestação de serviços do Setor de Avaliação Digital.",
-                q2: ["Confidencialidade", "Integridade", "Disponibilidade"],
-                q3: "Nível 5 (N5) trata de incidentes de segurança, ou seja, eventos que indicam ataques em andamento ou comprometimento do ambiente. Seu foco principal é a contenção, erradicação e recuperação do incidente, minimizando impactos para a organização.",
-                q4: "Não",
-                q5: "A principal responsabilidade da Coordenadoria de Segurança e Patrimônio é controlar o acesso físico ao edifício sede, incluindo a criação e manutenção de perfis de acesso, associação de crachás e liberação/revogação de direitos de acesso físico.",
-                q6: "Minimizar os riscos ao negócio, garantir a segurança da informação e conformidade com requisitos legais.",
-                q7: ["Minimo 8 caracteres", "Nao conter nome da conta ou 2 caracteres consecutivos do nome", "Conter caracteres de 3 de 4 categorias", "Troca a cada 180 dias"],
-                q8: "RPO (Recovery Point Objective) é a frequência ou o tempo necessário que backups precisam ser feitos para que dados não sejam perdidos. RTO (Recovery Time Objective) é o período de tempo após um incidente dentro do qual um produto ou serviço ou atividade é retomada.",
-                q9: "A Coordenadoria de Avaliação Digital, que é responsável por desenvolver de forma segura a solução do Gerenciador de Provas Online GPO, que faz parte de um ecossistema para aplicação de Avaliação Digital segura, que por sua vez compreende o GPO Web, o GPO Safe Browser e o GPO Pendrive.",
-                q10: "Superintendência de Tecnologia e Inovação",
-                q11: ["Service Desk", "Ligacao telefônica"],
-                q12: "Confidencial",
-                q13: "É proibida a instalação de software, sem que estejam devidamente identificados, licenciados e homologados pela FUNDAÇÃO CESGRANRIO. Não é permitido o download de software, programas, jogos, executáveis da Internet ou de quaisquer outros meios para os computadores da FUNDAÇÃO CESGRANRIO sem o devido processo formal.",
-                q14: "Determinado: Verde, Prestador: Laranja"
+            const answersData = {
+                q1: { expected: "Definir regras e prover medidas rápidas e eficazes para os processos críticos de TI em casos de incidentes graves ou desastres, garantindo a continuidade da prestação de serviços do Setor de Avaliação Digital.", keywords: ["continuar negócio", "garantir continuidade", "prover medidas rápidas e eficazes"] },
+                q2: { expected: ["Confidencialidade", "Integridade", "Disponibilidade"], type: "checkbox" },
+                q3: { expected: "Nível 5 (N5) trata de incidentes de segurança, ou seja, eventos que indicam ataques em andamento ou comprometimento do ambiente. Seu foco principal é a contenção, erradicação e recuperação do incidente, minimizando impactos para a organização.", keywords: ["incidentes de segurança", "contenção", "erradicação", "recuperação"] },
+                q4: { expected: "Não", type: "radio" },
+                q5: { expected: "A principal responsabilidade da Coordenadoria de Segurança e Patrimônio é controlar o acesso físico ao edifício sede, incluindo a criação e manutenção de perfis de acesso, associação de crachás e liberação/revogação de direitos de acesso físico.", keywords: ["controlar acesso físico", "criação e manutenção de perfis de acesso", "associação de crachás"] },
+                q6: { expected: "Minimizar os riscos ao negócio, garantir a segurança da informação e conformidade com requisitos legais.", keywords: ["minimizar riscos", "garantir segurança", "conformidade legal"] },
+                q7: { expected: ["Minimo 8 caracteres", "Nao conter nome da conta ou 2 caracteres consecutivos do nome", "Conter caracteres de 3 de 4 categorias", "Troca a cada 180 dias"], type: "checkbox" },
+                q8: { expected: "RPO (Recovery Point Objective) é a frequência ou o tempo necessário que backups precisam ser feitos para que dados não sejam perdidos. RTO (Recovery Time Objective) é o período de tempo após um incidente dentro do qual um produto ou serviço ou atividade é retomada.", keywords: ["rpo frequencia", "rto tempo", "rpo tempo necessario", "rto periodo de tempo"] },
+                q9: { expected: "A Coordenadoria de Avaliação Digital, que é responsável por desenvolver de forma segura a solução do Gerenciador de Provas Online GPO, que faz parte de um ecossistema para aplicação de Avaliação Digital segura, que por sua vez compreende o GPO Web, o GPO Safe Browser e o GPO Pendrive.", keywords: ["coordenadoria de avaliação digital", "gpo web", "gpo safe browser", "gpo pendrive"] },
+                q10: { expected: "Superintendência de Tecnologia e Inovação", keywords: ["superintendência de tecnologia e inovação", "superintendencia de tecnologia e inovacao"] },
+                q11: { expected: ["Service Desk", "Ligacao telefônica"], type: "checkbox" },
+                q12: { expected: "Confidencial", type: "radio" },
+                q13: { expected: "É proibida a instalação de software, sem que estejam devidamente identificados, licenciados e homologados pela FUNDAÇÃO. Não é permitido o download de software, programas, jogos, executáveis da Internet ou de quaisquer outros meios para os computadores da FUNDAÇÃO sem o devido processo formal.", keywords: ["proibida a instalação de software", "sem que estejam devidamente identificados", "licenciados e homologados", "não é permitido o download de software"] },
+                q14: { expected: "Determinado: Verde, Prestador: Laranja", type: "radio" }
             };
 
             let score = 0;
-            const totalQuestions = Object.keys(answers).length;
+            const totalQuestions = Object.keys(answersData).length;
             const individualFeedbackDiv = document.getElementById('individual-feedback');
             individualFeedbackDiv.innerHTML = ''; // Limpa feedbacks anteriores
+            const userQuizAnswers = {}; // Para armazenar as respostas do usuário e o feedback
 
             // Função para normalizar strings (remover acentos, converter para minúsculas e remover espaços extras)
             const normalizeString = (str) => {
                 return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, ' ');
             };
 
-            // Função para verificar respostas de texto
-            const checkTextAnswer = (qId, expectedAnswer, feedbackKeywords) => {
-                const userAnswer = normalizeString(document.getElementById(qId).value);
+            // Processar cada questão
+            for (const qId in answersData) {
+                const qData = answersData[qId];
                 const feedbackElement = document.getElementById(`${qId}-feedback`);
-                let isCorrect = false;
-                for (const keyword of feedbackKeywords) {
-                    if (userAnswer.includes(normalizeString(keyword))) {
-                        isCorrect = true;
-                        break;
+                let isQuestionCorrect = false;
+                let questionScore = 0;
+                let userResponse = '';
+
+                if (qData.type === "checkbox") {
+                    const selectedValues = Array.from(document.querySelectorAll(`input[name="${qId}"]:checked`)).map(cb => cb.value);
+                    userResponse = selectedValues.join(', ');
+                    let correctSelections = 0;
+                    let incorrectSelections = 0;
+
+                    qData.expected.forEach(expectedVal => {
+                        if (selectedValues.includes(expectedVal)) {
+                            correctSelections++;
+                        }
+                    });
+
+                    selectedValues.forEach(selectedVal => {
+                        if (!qData.expected.includes(selectedVal)) {
+                            incorrectSelections++;
+                        }
+                    });
+
+                    // Pontuação parcial: +1 por resposta correta selecionada, -1 por resposta incorreta selecionada
+                    questionScore = Math.max(0, correctSelections - incorrectSelections);
+                    isQuestionCorrect = (correctSelections === qData.expected.length && incorrectSelections === 0);
+
+                    if (isQuestionCorrect) {
+                        feedbackElement.textContent = "Correto!";
+                        feedbackElement.className = "feedback correct";
+                        score++; // Pontuação total para questões totalmente corretas
+                    } else if (questionScore > 0) {
+                        feedbackElement.textContent = `Parcialmente correto. Você acertou ${correctSelections} e errou ${incorrectSelections} opções. Resposta esperada: ${qData.expected.join(', ')}. Sua resposta: ${userResponse}`;
+                        feedbackElement.className = "feedback incorrect"; // Ainda é "incorrect" para não ser 100%
+                        score += (questionScore / qData.expected.length); // Adiciona uma fração da pontuação total
+                    }
+                    else {
+                        feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected.join(', ')}. Sua resposta: ${userResponse}`;
+                        feedbackElement.className = "feedback incorrect";
+                    }
+
+                } else if (qData.type === "radio") {
+                    const selectedValue = document.querySelector(`input[name="${qId}"]:checked`)?.value;
+                    userResponse = selectedValue || 'Nenhuma';
+                    isQuestionCorrect = (selectedValue === qData.expected);
+
+                    if (isQuestionCorrect) {
+                        feedbackElement.textContent = "Correto!";
+                        feedbackElement.className = "feedback correct";
+                        score++;
+                    } else {
+                        feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected}. Sua resposta: ${userResponse}`;
+                        feedbackElement.className = "feedback incorrect";
+                    }
+                } else { // Tipo texto (input ou textarea)
+                    const userAnswer = normalizeString(document.getElementById(qId).value);
+                    userResponse = document.getElementById(qId).value; // Manter a resposta original para exibição
+                    let matchedKeywords = 0;
+                    qData.keywords.forEach(keyword => {
+                        if (userAnswer.includes(normalizeString(keyword))) {
+                            matchedKeywords++;
+                        }
+                    });
+
+                    // Considerar correto se pelo menos uma palavra-chave importante for encontrada
+                    isQuestionCorrect = (matchedKeywords > 0);
+                    if (isQuestionCorrect) {
+                        feedbackElement.textContent = "Correto!";
+                        feedbackElement.className = "feedback correct";
+                        score++;
+                    } else {
+                        feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected}`;
+                        feedbackElement.className = "feedback incorrect";
                     }
                 }
-
-                if (isCorrect) {
-                    feedbackElement.textContent = "Correto!";
-                    feedbackElement.className = "feedback correct";
-                    score++;
-                } else {
-                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedAnswer}`;
-                    feedbackElement.className = "feedback incorrect";
-                }
                 individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qId.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
-            };
+                userQuizAnswers[qId] = {
+                    userAnswer: userResponse,
+                    isCorrect: isQuestionCorrect,
+                    feedback: feedbackElement.textContent
+                };
+            }
 
-            // Função para verificar respostas de múltipla escolha (checkbox)
-            const checkCheckboxAnswer = (qName, expectedValues) => {
-                const selectedValues = Array.from(document.querySelectorAll(`input[name="${qName}"]:checked`)).map(cb => cb.value);
-                const feedbackElement = document.getElementById(`${qName}-feedback`);
-                const isCorrect = selectedValues.length === expectedValues.length && expectedValues.every(val => selectedValues.includes(val));
-
-                if (isCorrect) {
-                    feedbackElement.textContent = "Correto!";
-                    feedbackElement.className = "feedback correct";
-                    score++;
-                } else {
-                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedValues.join(', ')}. Sua resposta: ${selectedValues.join(', ')}`;
-                    feedbackElement.className = "feedback incorrect";
-                }
-                individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qName.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
-            };
-
-            // Função para verificar respostas de múltipla escolha (radio)
-            const checkRadioAnswer = (qName, expectedValue) => {
-                const selectedValue = document.querySelector(`input[name="${qName}"]:checked`)?.value;
-                const feedbackElement = document.getElementById(`${qName}-feedback`);
-
-                if (selectedValue === expectedValue) {
-                    feedbackElement.textContent = "Correto!";
-                    feedbackElement.className = "feedback correct";
-                    score++;
-                } else {
-                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedValue}. Sua resposta: ${selectedValue || 'Nenhuma'}`;
-                    feedbackElement.className = "feedback incorrect";
-                }
-                individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qName.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
-            };
-
-
-            // Chamadas das funções de verificação para cada questão
-            // Plano de Continuidade de Negócio
-            checkTextAnswer('q1', answers.q1, ["continuar negócio", "garantir continuidade", "prover medidas rápidas e eficazes"]);
-            checkTextAnswer('q8', answers.q8, ["rpo frequencia", "rto tempo", "rpo tempo necessario", "rto periodo de tempo"]);
-
-            // Plano do Sistema de Gestão
-            checkTextAnswer('q6', answers.q6, ["minimizar riscos", "garantir segurança", "conformidade legal"]);
-            checkTextAnswer('q9', answers.q9, ["coordenadoria de avaliação digital", "gpo web", "gpo safe browser", "gpo pendrive"]);
-            checkTextAnswer('q10', answers.q10, ["superintendência de tecnologia e inovação", "superintendencia de tecnologia e inovacao"]);
-
-            // Procedimento Gestão de Incidente
-            checkTextAnswer('q3', answers.q3, ["incidentes de segurança", "contenção", "erradicação", "recuperação"]);
-            checkCheckboxAnswer('q11', answers.q11);
-
-            // Política da Segurança da Informação
-            checkCheckboxAnswer('q2', answers.q2);
-            checkCheckboxAnswer('q7', answers.q7);
-            checkRadioAnswer('q12', answers.q12);
-            checkTextAnswer('q13', answers.q13, ["proibida a instalação de software", "sem que estejam devidamente identificados", "licenciados e homologados", "não é permitido o download de software"]);
-
-            // Política de Trabalho Remoto
-            checkRadioAnswer('q4', answers.q4);
-
-            // Procedimento Gestão de Acesso
-            checkTextAnswer('q5', answers.q5, ["controlar acesso físico", "criação e manutenção de perfis de acesso", "associação de crachás"]);
-            checkRadioAnswer('q14', answers.q14);
-
-
-            // Exibe os resultados gerais
+            const finalScore = (score / totalQuestions) * 100; // Pontuação em porcentagem
             const scoreDisplay = document.getElementById('score-display');
-            scoreDisplay.textContent = `Você acertou ${score} de ${totalQuestions} perguntas.`;
+            scoreDisplay.textContent = `Você acertou ${score.toFixed(1)} de ${totalQuestions} perguntas. Sua nota final é: ${finalScore.toFixed(2)}%.`;
             document.getElementById('quiz-results').classList.remove('hidden');
+
+            // Salvar resultados no Firestore
+            if (auth.currentUser) {
+                try {
+                    const userId = auth.currentUser.uid;
+                    await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'quiz_results'), {
+                        timestamp: Timestamp.now(),
+                        score: finalScore.toFixed(2),
+                        totalQuestions: totalQuestions,
+                        correctAnswers: score.toFixed(1),
+                        userAnswers: userQuizAnswers // Salva as respostas detalhadas do usuário
+                    });
+                    console.log("Resultados do questionário salvos com sucesso!");
+                } catch (e) {
+                    console.error("Erro ao salvar resultados do questionário no Firestore:", e);
+                }
+            }
         });
+
+
+        // Função para carregar e exibir resultados anteriores do questionário
+        async function loadQuizResults(userId) {
+            profileContentDiv.innerHTML = '<p>Carregando seus resultados anteriores...</p>';
+            try {
+                const q = query(collection(db, 'artifacts', appId, 'users', userId, 'quiz_results'));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    profileContentDiv.innerHTML = '<p>Você ainda não tem resultados de questionários.</p>';
+                    return;
+                }
+
+                let resultsHtml = '<h3 class="text-lg font-semibold text-gray-800 mb-2">Meus Resultados Anteriores:</h3>';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : 'Data Indisponível';
+                    resultsHtml += `
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4 shadow-sm">
+                            <p><strong>Data:</strong> ${date}</p>
+                            <p><strong>Nota:</strong> ${data.score}% (${data.correctAnswers} de ${data.totalQuestions} corretas)</p>
+                            <button class="toggle-answers text-blue-600 hover:underline mt-2 text-sm" data-answers='${JSON.stringify(data.userAnswers)}'>Ver Respostas Detalhadas</button>
+                            <div class="detailed-answers hidden mt-2 text-sm bg-blue-100 p-3 rounded-md"></div>
+                        </div>
+                    `;
+                });
+                profileContentDiv.innerHTML = resultsHtml;
+
+                // Adicionar listeners para os botões "Ver Respostas Detalhadas"
+                document.querySelectorAll('.toggle-answers').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const detailedAnswersDiv = e.target.nextElementSibling;
+                        if (detailedAnswersDiv.classList.contains('hidden')) {
+                            const answers = JSON.parse(e.target.dataset.answers);
+                            let answersHtml = '<ul>';
+                            for (const qId in answers) {
+                                const answer = answers[qId];
+                                const questionNumber = qId.replace('q', '');
+                                const feedbackClass = answer.isCorrect ? 'text-green-600' : 'text-red-600';
+                                answersHtml += `
+                                    <li><strong>Questão ${questionNumber}:</strong> ${answer.userAnswer} <span class="${feedbackClass}">(${answer.feedback})</span></li>
+                                `;
+                            }
+                            answersHtml += '</ul>';
+                            detailedAnswersDiv.innerHTML = answersHtml;
+                            detailedAnswersDiv.classList.remove('hidden');
+                            e.target.textContent = 'Esconder Respostas Detalhadas';
+                        } else {
+                            detailedAnswersDiv.classList.add('hidden');
+                            e.target.textContent = 'Ver Respostas Detalhadas';
+                        }
+                    });
+                });
+
+            } catch (e) {
+                console.error("Erro ao carregar resultados do questionário:", e);
+                profileContentDiv.innerHTML = '<p class="text-red-600">Ocorreu um erro ao carregar seus resultados. Tente novamente mais tarde.</p>';
+            }
+        }
     </script>
 </body>
 </html>
