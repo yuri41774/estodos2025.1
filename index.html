@@ -184,6 +184,8 @@
             position: relative;
             transform: translateY(-20px); /* Efeito de entrada */
             transition: transform 0.3s ease-in-out;
+            max-height: 90vh; /* Adicionado para permitir rolagem */
+            overflow-y: auto; /* Adicionado para permitir rolagem vertical */
         }
         .modal-overlay.show .modal-content {
             transform: translateY(0);
