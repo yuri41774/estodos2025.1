@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentação de Segurança da Informação - Cesgranrio</title>
+    <title>Documentação de Segurança da Informação - Fundação</title>
     <!-- Inclui o Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,6 +29,8 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap; /* Permite que os itens do cabeçalho quebrem linha em telas pequenas */
+            position: relative; /* Para z-index */
+            z-index: 20; /* Acima da tela de boas-vindas */
         }
         header h1 {
             color: #ffffff; /* Texto branco */
@@ -56,6 +58,13 @@
             max-width: 6xl; /* Mantém a largura máxima do conteúdo */
             padding: 1rem; /* Padding para o conteúdo principal */
             margin-top: 1rem; /* Espaçamento entre o header e o main */
+            opacity: 0; /* Inicialmente escondido */
+            visibility: hidden; /* Inicialmente escondido */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+        main.show {
+            opacity: 1;
+            visibility: visible;
         }
 
         /* Estilos adicionais para melhor visualização do conteúdo e espaçamento */
@@ -186,17 +195,75 @@
         .modal-close-button:hover {
             color: #374151; /* gray-700 */
         }
+
+        /* Estilos para a tela de boas-vindas */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f2f5; /* Cor de fundo suave */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 10; /* Abaixo do header e do modal */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+        .welcome-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Impede interação quando escondido */
+        }
+        .welcome-screen h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+        .welcome-screen p {
+            font-size: 1.25rem;
+            color: #4b5563;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            padding: 0 1rem;
+        }
+        .welcome-screen button {
+            background-color: #3b82f6;
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-screen button:hover {
+            background-color: #2563eb;
+        }
     </style>
 </head>
 <body class="antialiased">
 
     <!-- Cabeçalho com botão de Login -->
     <header role="banner">
-        <h1 class="text-xl md:text-2xl">Documentação Cesgranrio</h1>
+        <h1 class="text-xl md:text-2xl">Documentação da Fundação</h1>
         <button id="loginButton" type="button" aria-label="Fazer login">Login</button>
     </header>
 
-    <!-- Container principal que centraliza o card -->
+    <!-- Tela de Boas-Vindas (inicialmente visível) -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <h2 class="text-4xl md:text-5xl">Bem-vindo à Documentação da Fundação!</h2>
+        <p class="text-lg md:text-xl">
+            Para aceder ao conteúdo completo e ao questionário de compreensão, por favor, faça login.
+        </p>
+        <button id="accessLoginButton" type="button" aria-label="Aceder à página de login">Fazer Login para Aceder</button>
+    </div>
+
+    <!-- Container principal que centraliza o card (inicialmente escondido) -->
     <main class="w-full max-w-6xl mx-auto p-4 md:p-6 lg:p-8" role="main">
         <!-- Flex Card Principal -->
         <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden">
@@ -207,38 +274,38 @@
                     <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4">Visão Geral da Documentação</h2>
                     <p class="text-gray-700 text-sm mb-6">
                         Este card apresenta um resumo das principais documentações de segurança
-                        e gestão da informação da Fundação Cesgranrio.
+                        e gestão da informação da Fundação.
                     </p>
                     <nav aria-label="Tópicos da Documentação">
                         <ul class="space-y-2">
                             <li>
                                 <a href="#plano-continuidade" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Plano de Continuidade de Negócio
+                                    SG-PL-004 - Plano de Continuidade de Negócio
                                 </a>
                             </li>
                             <li>
                                 <a href="#plano-gestao" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Plano do Sistema de Gestão
+                                    SG-PL-001 - Plano do Sistema de Gestão
                                 </a>
                             </li>
                             <li>
                                 <a href="#gestao-incidente" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Procedimento Gestão de Incidente
+                                    SG-PR-008 - Procedimento Gestão de Incidente
                                 </a>
                             </li>
                             <li>
                                 <a href="#politica-seguranca" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Política da Segurança da Informação
+                                    SG-PO-002 - Política da Segurança da Informação
                                 </a>
                             </li>
                             <li>
                                 <a href="#politica-trabalho-remoto" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Política de Trabalho Remoto
+                                    SG-PO-003 - Política de Trabalho Remoto
                                 </a>
                             </li>
                             <li>
                                 <a href="#gestao-acesso" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
-                                    Procedimento Gestão de Acesso
+                                    SG-PR-010 - Procedimento Gestão de Acesso
                                 </a>
                             </li>
                             <li>
@@ -284,7 +351,7 @@
                     <section id="plano-gestao" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="plano-gestao-heading">
                         <h2 id="plano-gestao-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PL-001 - Plano do Sistema de Gestão (SGSI)</h2>
                         <p class="text-gray-700 leading-relaxed">
-                            O SGSI visa incorporar as atividades de gestão da FUNDAÇÃO CESGRANRIO através de processos,
+                            O SGSI visa incorporar as atividades de gestão da Fundação através de processos,
                             procedimentos e planos para aplicar suas políticas e alcançar objetivos como minimizar riscos,
                             garantir segurança da informação e conformidade legal.
                         </p>
@@ -324,7 +391,7 @@
 
                     <!-- Política da Segurança da Informação -->
                     <section id="politica-seguranca" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="politica-seguranca-heading">
-                        <h2 id="politica-seguranca-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PO-002 - Política da Segurança da Informação (PSI)</h2>
+                        <h2 id="politica-seguranca-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PO-002 - Política da Segurança da Informação</h2>
                         <p class="text-gray-700 leading-relaxed">
                             A PSI estabelece diretrizes para a criação, transmissão, processamento, utilização, armazenamento,
                             recuperação e descarte de informações, visando preservar a <strong>Confidencialidade, Integridade e Disponibilidade (CID)</strong>.
@@ -348,7 +415,7 @@
                         <h2 id="politica-trabalho-remoto-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PO-003 - Política de Trabalho Remoto</h2>
                         <p class="text-gray-700 leading-relaxed">
                             Define a política de Segurança da Informação (SI) e privacidade para o trabalho em Home-Office,
-                            aplicável a todos os colaboradores que utilizam equipamentos da Companhia ou particulares.
+                            aplicável a todos os colaboradores que utilizam equipamentos da Fundação ou particulares.
                         </p>
                         <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Condições e Uso Aceitável:</h3>
                         <ul class="text-gray-600 text-sm">
@@ -397,7 +464,7 @@
                     <section id="questionario" class="mb-8 pb-4" aria-labelledby="questionario-heading">
                         <h2 id="questionario-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">Questionário de Compreensão</h2>
                         <p class="text-gray-700 leading-relaxed mb-6">
-                            Por favor, responda às seguintes perguntas para testar a sua compreensão sobre os documentos de segurança da informação da Fundação Cesgranrio.
+                            Por favor, responda às seguintes perguntas para testar a sua compreensão sobre os documentos de segurança da informação da Fundação.
                         </p>
 
                         <form id="quizForm" class="space-y-6">
@@ -440,7 +507,7 @@
                                 <div class="feedback" id="q3-feedback"></div>
                             </div>
                             <div class="form-group" id="q11-group">
-                                <label aria-labelledby="q11-label">7. Quais são os meios formais para colaboradores e prestadores da Cesgranrio relatarem um incidente?</label>
+                                <label aria-labelledby="q11-label">7. Quais são os meios formais para colaboradores e prestadores da Fundação relatarem um incidente?</label>
                                 <div id="q11-label" class="sr-only">Meios formais para relatar um incidente</div>
                                 <div class="flex items-center mb-2">
                                     <input type="checkbox" id="q11a" name="q11" value="Service Desk" class="form-checkbox text-blue-600 rounded">
@@ -460,7 +527,7 @@
                             <!-- Seção: Política da Segurança da Informação (SG-PO-002) -->
                             <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Política da Segurança da Informação</h3>
                             <div class="form-group" id="q2-group">
-                                <label aria-labelledby="q2-label">8. Quais são os três princípios de segurança da informação que a Política de Segurança da Informação (PSI) visa preservar?</label>
+                                <label aria-labelledby="q2-label">8. Quais são os três princípios de segurança da informação que a Política de Segurança da Informação visa preservar?</label>
                                 <div id="q2-label" class="sr-only">Princípios de segurança da informação</div>
                                 <div class="flex items-center mb-2">
                                     <input type="checkbox" id="q2a" name="q2" value="Confidencialidade" class="form-checkbox text-blue-600 rounded">
@@ -589,7 +656,7 @@
 
                 <!-- Rodapé da Seção Direita -->
                 <div class="mt-8 pt-6 border-t border-gray-200 text-sm text-gray-500">
-                    Resumo gerado com base nas documentações da Fundação Cesgranrio.
+                    Resumo gerado com base nas documentações da Fundação.
                     Última atualização: 18 de Julho de 2025
                 </div>
             </div>
@@ -695,6 +762,10 @@
         const authModalTitle = document.getElementById('auth-modal-title');
         const loginMessageDiv = document.getElementById('loginMessage');
         const registerMessageDiv = document.getElementById('registerMessage');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const mainContent = document.querySelector('main');
+        const accessLoginButton = document.getElementById('accessLoginButton');
+
 
         // Listener para o estado de autenticação do usuário
         onAuthStateChanged(auth, (user) => {
@@ -703,11 +774,15 @@
                 loginButton.textContent = `Olá, ${user.displayName || user.email}`;
                 loginButton.removeEventListener('click', openAuthModal); // Remove o listener de abrir modal
                 loginButton.addEventListener('click', signOutUser); // Adiciona listener para fazer logout
+                welcomeScreen.classList.add('hidden'); // Esconde a tela de boas-vindas
+                mainContent.classList.add('show'); // Mostra o conteúdo principal
             } else {
                 // Usuário está deslogado
                 loginButton.textContent = 'Login';
                 loginButton.removeEventListener('click', signOutUser); // Remove o listener de fazer logout
                 loginButton.addEventListener('click', openAuthModal); // Adiciona listener para abrir modal
+                welcomeScreen.classList.remove('hidden'); // Mostra a tela de boas-vindas
+                mainContent.classList.remove('show'); // Esconde o conteúdo principal
             }
         });
 
@@ -726,17 +801,18 @@
         function signOutUser() {
             signOut(auth).then(() => {
                 // Logout bem-sucedido
-                // alert('Você foi desconectado.'); // Usando alert temporariamente, idealmente usar um modal customizado
-                // Melhorar o feedback de logout, por exemplo, com uma mensagem no próprio modal ou na tela
+                // A tela de boas-vindas será mostrada automaticamente pelo onAuthStateChanged
             }).catch((error) => {
                 // Erro ao fazer logout
                 console.error("Erro ao fazer logout:", error);
-                // alert('Erro ao desconectar: ' + error.message); // Usando alert temporariamente
+                // Implementar feedback de erro adequado, sem alert()
             });
         }
 
         // Listeners para o modal de autenticação
         loginButton.addEventListener('click', openAuthModal); // Configuração inicial, será substituída por onAuthStateChanged
+        accessLoginButton.addEventListener('click', openAuthModal); // Botão "Fazer Login para Aceder" na tela de boas-vindas
+
         closeAuthModalButton.addEventListener('click', () => {
             authModal.classList.remove('show');
             loginButton.focus(); // Retorna o foco para o botão de login
@@ -780,7 +856,7 @@
                 loginMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    loginButton.focus();
+                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
                 }, 1000); // Fecha o modal após 1 segundo
             } catch (error) {
                 let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
@@ -806,7 +882,7 @@
                 loginMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    loginButton.focus();
+                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
                 }, 1000); // Fecha o modal após 1 segundo
             } catch (error) {
                 let errorMessage = "Erro ao fazer login com Google.";
@@ -843,7 +919,7 @@
                 registerMessageDiv.className = "feedback correct";
                 setTimeout(() => {
                     authModal.classList.remove('show');
-                    loginButton.focus();
+                    // O onAuthStateChanged vai lidar com a visibilidade do conteúdo
                 }, 1000); // Fecha o modal após 1 segundo
             } catch (error) {
                 let errorMessage = "Erro ao cadastrar.";
