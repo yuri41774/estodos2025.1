@@ -98,7 +98,10 @@
         .form-group input[type="text"],
         .form-group textarea,
         .form-group input[type="email"],
-        .form-group input[type="password"] {
+        .form-group input[type="password"],
+        .form-group input[type="date"],
+        .form-group input[type="tel"],
+        .form-group select {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -111,7 +114,10 @@
         .form-group input[type="text"]:focus,
         .form-group textarea:focus,
         .form-group input[type="email"]:focus,
-        .form-group input[type="password"]:focus {
+        .form-group input[type="password"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group input[type="tel"]:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
@@ -299,12 +305,12 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#politica-trabalho-remoto" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                <a href="#politica-trabalho-remoto" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
                                     SG-PO-003 - Política de Trabalho Remoto
                                 </a>
                             </li>
                             <li>
-                                <a href="#gestao-acesso" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                <a href="#gestao-acesso" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
                                     SG-PR-010 - Procedimento Gestão de Acesso
                                 </a>
                             </li>
@@ -719,6 +725,32 @@
             <!-- Formulário de Cadastro -->
             <form id="registerForm" class="space-y-4 hidden">
                 <div class="form-group">
+                    <label for="registerName">Nome:</label>
+                    <input type="text" id="registerName" name="registerName" placeholder="Seu nome" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="registerSurname">Sobrenome:</label>
+                    <input type="text" id="registerSurname" name="registerSurname" placeholder="Seu sobrenome" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="registerGender">Gênero:</label>
+                    <select id="registerGender" name="registerGender" class="rounded-lg">
+                        <option value="">Selecione</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Nao binario">Não Binário</option>
+                        <option value="Prefiro nao informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerDOB">Data de Nascimento:</label>
+                    <input type="date" id="registerDOB" name="registerDOB" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Celular (DDD) XXXXX-XXXX:</label>
+                    <input type="tel" id="registerPhone" name="registerPhone" placeholder="(XX) XXXXX-XXXX" pattern="\(\d{2}\) \d{5}-\d{4}" maxlength="15" required class="rounded-lg">
+                </div>
+                <div class="form-group">
                     <label for="registerEmail">E-mail:</label>
                     <input type="email" id="registerEmail" name="registerEmail" placeholder="seu.email@exemplo.com" required class="rounded-lg">
                 </div>
@@ -745,7 +777,7 @@
         // Importa as funções necessárias do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         // Configuração do Firebase (substitua pelos seus dados reais)
@@ -786,6 +818,13 @@
         const accessLoginButton = document.getElementById('accessLoginButton');
         const profileContentDiv = document.getElementById('profile-content');
 
+        // Elementos do novo formulário de cadastro
+        const registerNameInput = document.getElementById('registerName');
+        const registerSurnameInput = document.getElementById('registerSurname');
+        const registerGenderSelect = document.getElementById('registerGender');
+        const registerDOBInput = document.getElementById('registerDOB');
+        const registerPhoneInput = document.getElementById('registerPhone');
+
 
         // Listener para o estado de autenticação do usuário
         onAuthStateChanged(auth, (user) => {
@@ -800,8 +839,8 @@
             } else {
                 // Usuário está deslogado
                 loginButton.textContent = 'Login';
-                loginButton.removeEventListener('click', signOutUser);
-                loginButton.addEventListener('click', openAuthModal);
+                loginButton.removeEventListener('click', signOutUser); // Correção: remove o listener signOutUser
+                loginButton.addEventListener('click', openAuthModal); // Adiciona listener para abrir modal
                 welcomeScreen.classList.remove('hidden'); // Mostra a tela de boas-vindas
                 mainContent.classList.remove('show'); // Esconde o conteúdo principal
                 profileContentDiv.innerHTML = '<p>Faça login para ver seus resultados.</p>'; // Limpa o perfil
@@ -825,12 +864,12 @@
                 // Logout bem-sucedido, onAuthStateChanged vai lidar com a UI
             }).catch((error) => {
                 console.error("Erro ao fazer logout:", error);
-                // Feedback de erro para o usuário (sem alert)
+                // Implementar feedback de erro adequado, sem alert()
             });
         }
 
         // Listeners para o modal de autenticação
-        loginButton.addEventListener('click', openAuthModal);
+        loginButton.addEventListener('click', openAuthModal); // Configuração inicial, será substituída por onAuthStateChanged
         accessLoginButton.addEventListener('click', openAuthModal); // Botão "Fazer Login para Aceder" na tela de boas-vindas
 
         closeAuthModalButton.addEventListener('click', () => {
@@ -920,6 +959,11 @@
         // Lógica de Cadastro de Nova Conta
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const name = registerNameInput.value;
+            const surname = registerSurnameInput.value;
+            const gender = registerGenderSelect.value;
+            const dob = registerDOBInput.value;
+            const phone = registerPhoneInput.value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
@@ -932,7 +976,25 @@
             }
 
             try {
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Atualizar perfil do usuário com nome e sobrenome
+                await updateProfile(user, {
+                    displayName: `${name} ${surname}`
+                });
+
+                // Salvar informações adicionais do usuário no Firestore
+                await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'profile'), {
+                    name: name,
+                    surname: surname,
+                    gender: gender,
+                    dateOfBirth: dob,
+                    phone: phone,
+                    email: email,
+                    registrationDate: Timestamp.now()
+                });
+
                 registerMessageDiv.textContent = 'Cadastro bem-sucedido! Você já está logado.';
                 registerMessageDiv.className = "feedback correct";
                 setTimeout(() => {
@@ -952,6 +1014,34 @@
                 console.error("Erro de cadastro:", error);
             }
         });
+
+        // Lógica de formatação do celular
+        registerPhoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            let formattedValue = '';
+
+            if (value.length > 0) {
+                formattedValue = '(' + value.substring(0, 2); // DDD
+            }
+            if (value.length >= 3) {
+                formattedValue += ') ' + value.substring(2, 7); // Primeiros 5 dígitos
+            }
+            if (value.length >= 8) {
+                formattedValue += '-' + value.substring(7, 11); // Últimos 4 dígitos
+            }
+            e.target.value = formattedValue;
+        });
+        registerPhoneInput.addEventListener('keydown', (e) => {
+            // Permite Backspace, Delete, Tab, Escape, Enter e as teclas de seta
+            if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Tab' || e.key === 'Escape' || e.key === 'Enter' || e.key.startsWith('Arrow')) {
+                return;
+            }
+            // Limita o comprimento total do campo formatado
+            if (e.target.value.length >= 15 && e.key.match(/\d/)) { // (XX) XXXXX-XXXX
+                e.preventDefault();
+            }
+        });
+
 
         // Lógica do questionário
         document.getElementById('quizForm').addEventListener('submit', async function(event) {
@@ -990,7 +1080,7 @@
                 const qData = answersData[qId];
                 const feedbackElement = document.getElementById(`${qId}-feedback`);
                 let isQuestionCorrect = false;
-                let questionScore = 0;
+                let questionScore = 0; // Pontuação para a questão atual (0 a 1)
                 let userResponse = '';
 
                 if (qData.type === "checkbox") {
@@ -1012,17 +1102,18 @@
                     });
 
                     // Pontuação parcial: +1 por resposta correta selecionada, -1 por resposta incorreta selecionada
-                    questionScore = Math.max(0, correctSelections - incorrectSelections);
+                    // Garante que a pontuação não seja negativa
+                    questionScore = Math.max(0, (correctSelections - incorrectSelections) / qData.expected.length);
                     isQuestionCorrect = (correctSelections === qData.expected.length && incorrectSelections === 0);
 
                     if (isQuestionCorrect) {
                         feedbackElement.textContent = "Correto!";
                         feedbackElement.className = "feedback correct";
-                        score++; // Pontuação total para questões totalmente corretas
+                        score += 1; // Adiciona 1 ponto completo para questões totalmente corretas
                     } else if (questionScore > 0) {
                         feedbackElement.textContent = `Parcialmente correto. Você acertou ${correctSelections} e errou ${incorrectSelections} opções. Resposta esperada: ${qData.expected.join(', ')}. Sua resposta: ${userResponse}`;
-                        feedbackElement.className = "feedback incorrect"; // Ainda é "incorrect" para não ser 100%
-                        score += (questionScore / qData.expected.length); // Adiciona uma fração da pontuação total
+                        feedbackElement.className = "feedback incorrect";
+                        score += questionScore; // Adiciona a fração da pontuação
                     }
                     else {
                         feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected.join(', ')}. Sua resposta: ${userResponse}`;
@@ -1037,7 +1128,7 @@
                     if (isQuestionCorrect) {
                         feedbackElement.textContent = "Correto!";
                         feedbackElement.className = "feedback correct";
-                        score++;
+                        score += 1;
                     } else {
                         feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected}. Sua resposta: ${userResponse}`;
                         feedbackElement.className = "feedback incorrect";
@@ -1052,22 +1143,31 @@
                         }
                     });
 
-                    // Considerar correto se pelo menos uma palavra-chave importante for encontrada
-                    isQuestionCorrect = (matchedKeywords > 0);
+                    // Pontuação parcial para texto: baseado no número de palavras-chave corretas
+                    questionScore = (matchedKeywords > 0) ? (matchedKeywords / qData.keywords.length) : 0;
+                    isQuestionCorrect = (matchedKeywords === qData.keywords.length); // Considera 100% se todas as keywords baterem
+
                     if (isQuestionCorrect) {
                         feedbackElement.textContent = "Correto!";
                         feedbackElement.className = "feedback correct";
-                        score++;
-                    } else {
+                        score += 1;
+                    } else if (questionScore > 0) {
+                        feedbackElement.textContent = `Parcialmente correto. Sua resposta contém ${matchedKeywords} palavras-chave corretas. Resposta esperada: ${qData.expected}`;
+                        feedbackElement.className = "feedback incorrect";
+                        score += questionScore;
+                    }
+                    else {
                         feedbackElement.textContent = `Incorreto. Resposta esperada: ${qData.expected}`;
                         feedbackElement.className = "feedback incorrect";
                     }
                 }
                 individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qId.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
                 userQuizAnswers[qId] = {
+                    question: document.querySelector(`label[for="${qId}"]`)?.textContent || `Questão ${qId.replace('q', '')}`,
                     userAnswer: userResponse,
                     isCorrect: isQuestionCorrect,
-                    feedback: feedbackElement.textContent
+                    feedback: feedbackElement.textContent,
+                    scoreEarned: questionScore.toFixed(2) // Pontuação ganha na questão
                 };
             }
 
@@ -1088,6 +1188,7 @@
                         userAnswers: userQuizAnswers // Salva as respostas detalhadas do usuário
                     });
                     console.log("Resultados do questionário salvos com sucesso!");
+                    loadQuizResults(userId); // Recarrega os resultados no perfil após salvar
                 } catch (e) {
                     console.error("Erro ao salvar resultados do questionário no Firestore:", e);
                 }
@@ -1099,6 +1200,7 @@
         async function loadQuizResults(userId) {
             profileContentDiv.innerHTML = '<p>Carregando seus resultados anteriores...</p>';
             try {
+                // Consulta ordenada por timestamp para mostrar os mais recentes primeiro
                 const q = query(collection(db, 'artifacts', appId, 'users', userId, 'quiz_results'));
                 const querySnapshot = await getDocs(q);
 
@@ -1110,11 +1212,11 @@
                 let resultsHtml = '<h3 class="text-lg font-semibold text-gray-800 mb-2">Meus Resultados Anteriores:</h3>';
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : 'Data Indisponível';
+                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('pt-BR') : 'Data Indisponível';
                     resultsHtml += `
                         <div class="bg-blue-50 p-4 rounded-lg mb-4 shadow-sm">
                             <p><strong>Data:</strong> ${date}</p>
-                            <p><strong>Nota:</strong> ${data.score}% (${data.correctAnswers} de ${data.totalQuestions} corretas)</p>
+                            <p><strong>Nota:</strong> ${data.score}% (${parseFloat(data.correctAnswers).toFixed(1)} de ${data.totalQuestions} corretas)</p>
                             <button class="toggle-answers text-blue-600 hover:underline mt-2 text-sm" data-answers='${JSON.stringify(data.userAnswers)}'>Ver Respostas Detalhadas</button>
                             <div class="detailed-answers hidden mt-2 text-sm bg-blue-100 p-3 rounded-md"></div>
                         </div>
@@ -1128,13 +1230,18 @@
                         const detailedAnswersDiv = e.target.nextElementSibling;
                         if (detailedAnswersDiv.classList.contains('hidden')) {
                             const answers = JSON.parse(e.target.dataset.answers);
-                            let answersHtml = '<ul>';
+                            let answersHtml = '<ul class="list-none p-0">'; // Removido bullets padrão
                             for (const qId in answers) {
                                 const answer = answers[qId];
-                                const questionNumber = qId.replace('q', '');
+                                const questionText = answer.question.split('?')[0] + '?'; // Pega só a parte da pergunta
                                 const feedbackClass = answer.isCorrect ? 'text-green-600' : 'text-red-600';
                                 answersHtml += `
-                                    <li><strong>Questão ${questionNumber}:</strong> ${answer.userAnswer} <span class="${feedbackClass}">(${answer.feedback})</span></li>
+                                    <li class="mb-2">
+                                        <p><strong>${questionText}</strong></p>
+                                        <p>Sua resposta: <em>${answer.userAnswer || 'Não respondida'}</em></p>
+                                        <p class="${feedbackClass}">${answer.feedback}</p>
+                                        <p>Pontuação: ${answer.scoreEarned || '0.00'}</p>
+                                    </li>
                                 `;
                             }
                             answersHtml += '</ul>';
