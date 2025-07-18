@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação de Segurança da Informação - Cesgranrio</title>
+    <!-- Inclui o Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos base para o corpo da página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Cor de fundo suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem; /* Padding geral para o corpo */
+        }
+        /* Estilos adicionais para melhor visualização do conteúdo e espaçamento */
+        h1, h2, h3, h4 {
+            margin-bottom: 0.75rem;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        strong {
+            font-weight: 600;
+        }
+        /* Estilos para grupos de formulário */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #374151;
+            background-color: #f9fafb;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        /* Estilos para feedback de correção */
+        .feedback {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .feedback.correct {
+            color: #10b981; /* green-500 */
+        }
+        .feedback.incorrect {
+            color: #ef4444; /* red-500 */
+        }
+        /* Estilos para a caixa de resultados do questionário */
+        .result-box {
+            background-color: #e0f2fe; /* blue-100 */
+            border: 1px solid #90cdf4; /* blue-300 */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .result-box h3 {
+            color: #1e40af; /* blue-800 */
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .result-box p {
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Container principal que centraliza o card -->
+    <main class="w-full max-w-6xl mx-auto p-4 md:p-6 lg:p-8" role="main">
+        <!-- Flex Card Principal -->
+        <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden">
+
+            <!-- Seção da Esquerda (Menu/Navegação ou Resumo) -->
+            <aside class="w-full md:w-1/3 p-6 bg-blue-50 md:border-r border-gray-200 flex flex-col justify-between" aria-label="Navegação Principal">
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4">Visão Geral da Documentação</h2>
+                    <p class="text-gray-700 text-sm mb-6">
+                        Este card apresenta um resumo das principais documentações de segurança
+                        e gestão da informação da Fundação Cesgranrio.
+                    </p>
+                    <nav aria-label="Tópicos da Documentação">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#plano-continuidade" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Plano de Continuidade de Negócio
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#plano-gestao" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Plano do Sistema de Gestão
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#gestao-incidente" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Procedimento Gestão de Incidente
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#politica-seguranca" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Política da Segurança da Informação
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#politica-trabalho-remoto" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Política de Trabalho Remoto
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#gestao-acesso" class="block p-3 rounded-lg text-gray-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Procedimento Gestão de Acesso
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#questionario" class="block p-3 rounded-lg text-blue-700 hover:bg-blue-100 font-medium transition duration-200">
+                                    Questionário
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <!-- Botão de Ação na seção esquerda -->
+                <button class="mt-8 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+                    Acessar Documentos Completos
+                </button>
+            </aside>
+
+            <!-- Seção da Direita (Conteúdo Principal da Documentação) -->
+            <div class="w-full md:w-2/3 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6">Documentações de Segurança e Gestão da Informação</h1>
+
+                    <!-- Plano de Continuidade de Negócio -->
+                    <section id="plano-continuidade" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="plano-continuidade-heading">
+                        <h2 id="plano-continuidade-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PL-004 - Plano de Continuidade de Negócio (PCN)</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            O objetivo do PCN é definir regras e prover medidas rápidas e eficazes para os processos críticos de TI
+                            em casos de incidentes graves ou desastres, garantindo a continuidade da prestação de serviços do Setor de Avaliação Digital.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Processos Vitais e Ameaças:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>Processos Vitais:</strong> Desenvolvimento, Manutenção e Operação dos Sistemas (Servidores de Domínio GPO/CESGRANRIO, Azure DevOps, Rede, Desktops remotos).</li>
+                            <li><strong>Ameaças:</strong> Humanas (erro, acesso indevido), Tecnológicas (falha de hardware/software, vírus, ataques cibernéticos, vazamento de dados), Infraestrutura (energia, refrigeração, nuvem), Naturais (incêndio, desastres naturais), Físicas (problemas estruturais).</li>
+                        </ul>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Estratégias de Continuidade (PCN = PAC + PCO + PRD):</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>PAC (Programa de Administração de Crises):</strong> Gerir e comunicar ações durante uma crise.</li>
+                            <li><strong>PCO (Plano de Continuidade Operacional):</strong> Manter o funcionamento dos principais serviços de TI e operações.</li>
+                            <li><strong>PRD (Plano de Recuperação de Desastres):</strong> Restabelecer o nível de operação dos serviços no ambiente afetado.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Plano do Sistema de Gestão -->
+                    <section id="plano-gestao" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="plano-gestao-heading">
+                        <h2 id="plano-gestao-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PL-001 - Plano do Sistema de Gestão (SGSI)</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            O SGSI visa incorporar as atividades de gestão da FUNDAÇÃO CESGRANRIO através de processos,
+                            procedimentos e planos para aplicar suas políticas e alcançar objetivos como minimizar riscos,
+                            garantir segurança da informação e conformidade legal.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Escopo e Contexto:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>Escopo:</strong> Coordenadoria de Avaliação Digital (desenvolvimento do GPO: GPO Web, Safe Browser, Pendrive).</li>
+                            <li><strong>Contexto Interno:</strong> Estrutura organizacional, processos, políticas, responsabilidades, cultura, capacidade de recursos.</li>
+                            <li><strong>Contexto Externo:</strong> Normas (ISO 27001), ambiente legal, social, tecnológico, político/econômico, mercado.</li>
+                        </ul>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Liderança e Planejamento:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li>A Alta Direção (Superintendência de Tecnologia e Inovação) garante o comprometimento e a melhoria contínua do SGSI.</li>
+                            <li>O planejamento aborda riscos e oportunidades para garantir resultados, melhoria e minimizar efeitos indesejáveis.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Procedimento Gestão de Incidente -->
+                    <section id="gestao-incidente" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="gestao-incidente-heading">
+                        <h2 id="gestao-incidente-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PR-008 - Procedimento Gestão de Incidente</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Este procedimento tem como objetivo restaurar a operação normal do serviço o mais rápido possível,
+                            minimizando interrupções e impactos negativos, e gerenciar incidentes de segurança da informação.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Níveis de Atendimento (Hierarquia):</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>N1 (SIEM):</strong> Alterações em Ativos e Rede (Baixa a Média Criticidade).</li>
+                            <li><strong>N2 (SIEM):</strong> Vulnerabilidades Média, Baixa e Informativa (Média Criticidade).</li>
+                            <li><strong>N3 (CLAVIS):</strong> Vulnerabilidades Críticas (Alta a Crítica Criticidade).</li>
+                            <li><strong>N4 (Cyber):</strong> Demandas de Cyber (Criticidade Variável).</li>
+                            <li><strong>N5 (Incidentes de Segurança):</strong> Resposta a ameaças ativas (Máxima Criticidade).</li>
+                        </ul>
+                        <p class="text-gray-700 leading-relaxed mt-4">
+                            A resolução e restauração são realizadas pelas Gerências de Suporte e Operações e Sistemas e Segurança,
+                            com acompanhamento, comunicação e aceite do solicitante.
+                        </p>
+                    </section>
+
+                    <!-- Política da Segurança da Informação -->
+                    <section id="politica-seguranca" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="politica-seguranca-heading">
+                        <h2 id="politica-seguranca-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PO-002 - Política da Segurança da Informação (PSI)</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            A PSI estabelece diretrizes para a criação, transmissão, processamento, utilização, armazenamento,
+                            recuperação e descarte de informações, visando preservar a <strong>Confidencialidade, Integridade e Disponibilidade (CID)</strong>.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Principais Seções e Controles:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>Controle de Acesso:</strong> Proteção da identidade do colaborador, NDA, restrição de acesso a informações e funções.</li>
+                            <li><strong>Política de Senha:</strong> Critérios de complexidade (mínimo 8 caracteres, 3 de 4 categorias), troca a cada 180 dias.</li>
+                            <li><strong>Classificação da Informação:</strong> Pública, Corporativa, Confidencial (Dado Pessoal é confidencial).</li>
+                            <li><strong>Segurança Física e do Ambiente:</strong> Prevenção de acesso não autorizado, identificação visível, proteção de equipamentos.</li>
+                            <li><strong>Uso dos Ativos:</strong> Uso exclusivo para atividades profissionais, monitoramento, criptografia de mídias removíveis e discos rígidos de notebooks.</li>
+                            <li><strong>Trabalho Remoto:</strong> Acesso via VDI, proibição de e-mails pessoais para assuntos corporativos.</li>
+                            <li><strong>Backup:</strong> Estratégias para proteger dados contra perda, testes periódicos de restauração.</li>
+                            <li><strong>Gestão de Incidentes de Segurança:</strong> Identificação, avaliação, registro e resposta eficaz a incidentes.</li>
+                            <li><strong>Processo Disciplinar:</strong> Sanções para não conformidade (Advertência Verbal/Escrita, Suspensão, Demissão).</li>
+                        </ul>
+                    </section>
+
+                    <!-- Política de Trabalho Remoto -->
+                    <section id="politica-trabalho-remoto" class="mb-8 pb-4 border-b border-gray-200" aria-labelledby="politica-trabalho-remoto-heading">
+                        <h2 id="politica-trabalho-remoto-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PO-003 - Política de Trabalho Remoto</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Define a política de Segurança da Informação (SI) e privacidade para o trabalho em Home-Office,
+                            aplicável a todos os colaboradores que utilizam equipamentos da Companhia ou particulares.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Condições e Uso Aceitável:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li>Acesso remoto via Horizon VDI Client.</li>
+                            <li>Proibido realizar atividades para terceiros com ganho pessoal.</li>
+                            <li>Proibido transmissão de material ilícito, informações sem autorização, fotos/gravações para uso pessoal.</li>
+                            <li>Equipamentos corporativos sujeitos a monitoramento e inspeção.</li>
+                            <li>Informações confidenciais/sensíveis devem ser criptografadas (Cesgransec).</li>
+                            <li>Proibido armazenar informações pessoais em equipamentos corporativos ou corporativas em equipamentos particulares.</li>
+                            <li>Uso exclusivo de e-mails corporativos para comunicações institucionais.</li>
+                        </ul>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Proteção e Responsabilidades:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li>Proteger equipamentos contra acesso não autorizado (bloqueio de tela, evitar Wi-Fi públicas).</li>
+                            <li>Reportar incidentes de segurança (ramal 9190 ou helpdesk).</li>
+                            <li>RH e Gerência de Sistemas e Segurança são responsáveis por manter a política e conscientizar.</li>
+                        </ul>
+                    </section>
+
+                    <!-- Procedimento Gestão de Acesso -->
+                    <section id="gestao-acesso" class="mb-8 pb-4" aria-labelledby="gestao-acesso-heading">
+                        <h2 id="gestao-acesso-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">SG-PR-010 - Procedimento Gestão de Acesso</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            O objetivo é garantir que as permissões e níveis de acesso (físico e lógico) estejam apropriados
+                            às atividades, aplicando o princípio do menor privilégio, e mitigar o risco de acesso não autorizado.
+                        </p>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Controle de Acesso Físico:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>Identificação:</strong> Crachás (cores diferentes para funcionários determinados/indeterminados, prestadores, estagiários, visitantes, provisórios).</li>
+                            <li><strong>Acesso:</strong> Controlado pela Coordenadoria de Segurança e Patrimônio. Locais de segurança máxima protegidos por biometria (Data Center).</li>
+                            <li><strong>Remoção/Bloqueio:</strong> Realizada em caso de desligamento, término de contrato, perda/furto de crachá, férias/licença/suspensão.</li>
+                        </ul>
+                        <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">Controle de Acesso Lógico:</h3>
+                        <ul class="text-gray-600 text-sm">
+                            <li><strong>Sistemas:</strong> Rede Intranet, Microsoft Azure, W-access, Service Desk, Office 365, etc.</li>
+                            <li><strong>Criação/Remoção:</strong> Gerência de Suporte e Operações (AD cesgranrio.org.br) e Gerência de Sistemas e Segurança (AD cesgpon.com.br).</li>
+                            <li><strong>Senhas:</strong> Temporárias no 1º acesso, troca obrigatória, redefinição via plataforma Microsoft.com.</li>
+                            <li><strong>Bloqueio de Login:</strong> Após 3 tentativas erradas ou em casos de férias/licença/suspensão.</li>
+                        </ul>
+                        <p class="text-gray-700 leading-relaxed mt-4">
+                            A revisão dos perfis de acesso (físico e lógico) é realizada anualmente para garantir conformidade.
+                        </p>
+                    </section>
+
+                    <!-- Novo Questionário -->
+                    <section id="questionario" class="mb-8 pb-4" aria-labelledby="questionario-heading">
+                        <h2 id="questionario-heading" class="text-xl md:text-2xl font-bold text-blue-700 mb-3">Questionário de Compreensão</h2>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            Por favor, responda às seguintes perguntas para testar a sua compreensão sobre os documentos de segurança da informação da Fundação Cesgranrio.
+                        </p>
+
+                        <form id="quizForm" class="space-y-6">
+                            <!-- Seção: Plano de Continuidade de Negócio (SG-PL-004) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Plano de Continuidade de Negócio</h3>
+                            <div class="form-group" id="q1-group">
+                                <label for="q1">1. Qual é o principal objetivo do Plano de Continuidade de Negócio (PCN)?</label>
+                                <input type="text" id="q1" name="q1" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q1-feedback">
+                                <div class="feedback" id="q1-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q8-group">
+                                <label for="q8">2. No Plano de Continuidade de Negócio (PCN), qual a diferença entre RPO (Recovery Point Objective) e RTO (Recovery Time Objective)?</label>
+                                <textarea id="q8" name="q8" rows="3" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q8-feedback"></textarea>
+                                <div class="feedback" id="q8-feedback"></div>
+                            </div>
+
+                            <!-- Seção: Plano do Sistema de Gestão (SG-PL-001) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Plano do Sistema de Gestão</h3>
+                            <div class="form-group" id="q6-group">
+                                <label for="q6">3. Qual o objetivo do SGSI (Sistema de Gestão da Segurança da Informação) em relação aos riscos, conforme o Plano do Sistema de Gestão?</label>
+                                <textarea id="q6" name="q6" rows="3" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q6-feedback"></textarea>
+                                <div class="feedback" id="q6-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q9-group">
+                                <label for="q9">4. Qual é o escopo do SGSI, conforme o Plano do Sistema de Gestão?</label>
+                                <input type="text" id="q9" name="q9" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q9-feedback">
+                                <div class="feedback" id="q9-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q10-group">
+                                <label for="q10">5. Quem é a "Alta Direção" considerada no Sistema de Gestão da Segurança da Informação?</label>
+                                <input type="text" id="q10" name="q10" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q10-feedback">
+                                <div class="feedback" id="q10-feedback"></div>
+                            </div>
+
+                            <!-- Seção: Procedimento Gestão de Incidente (SG-PR-008) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Procedimento Gestão de Incidente</h3>
+                            <div class="form-group" id="q3-group">
+                                <label for="q3">6. No Procedimento Gestão de Incidente, qual é o Nível 5 (N5) e qual o seu foco principal?</label>
+                                <textarea id="q3" name="q3" rows="3" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q3-feedback"></textarea>
+                                <div class="feedback" id="q3-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q11-group">
+                                <label aria-labelledby="q11-label">7. Quais são os meios formais para colaboradores e prestadores da Cesgranrio relatarem um incidente?</label>
+                                <div id="q11-label" class="sr-only">Meios formais para relatar um incidente</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q11a" name="q11" value="Service Desk" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q11a" class="ml-2 text-gray-700">Service Desk no módulo de Segurança da Informação</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q11b" name="q11" value="Ligacao telefônica" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q11b" class="ml-2 text-gray-700">Por ligação telefônica no ramal 9190</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q11c" name="q11" value="Email" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q11c" class="ml-2 text-gray-700">Por e-mail para o gestor</label>
+                                </div>
+                                <div class="feedback" id="q11-feedback"></div>
+                            </div>
+
+                            <!-- Seção: Política da Segurança da Informação (SG-PO-002) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Política da Segurança da Informação</h3>
+                            <div class="form-group" id="q2-group">
+                                <label aria-labelledby="q2-label">8. Quais são os três princípios de segurança da informação que a Política de Segurança da Informação (PSI) visa preservar?</label>
+                                <div id="q2-label" class="sr-only">Princípios de segurança da informação</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q2a" name="q2" value="Confidencialidade" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q2a" class="ml-2 text-gray-700">Confidencialidade</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q2b" name="q2" value="Integridade" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q2b" class="ml-2 text-gray-700">Integridade</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q2c" name="q2" value="Disponibilidade" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q2c" class="ml-2 text-gray-700">Disponibilidade</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q2d" name="q2" value="Transparência" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q2d" class="ml-2 text-gray-700">Transparência</label>
+                                </div>
+                                <div class="feedback" id="q2-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q7-group">
+                                <label aria-labelledby="q7-label">9. De acordo com a Política de Segurança da Informação, quais são os requisitos mínimos para senhas de acesso à rede?</label>
+                                <div id="q7-label" class="sr-only">Requisitos mínimos para senhas de acesso à rede</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7a" name="q7" value="Minimo 6 caracteres" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7a" class="ml-2 text-gray-700">Mínimo 6 caracteres</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7b" name="q7" value="Minimo 8 caracteres" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7b" class="ml-2 text-gray-700">Mínimo 8 caracteres</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7c" name="q7" value="Nao conter nome da conta ou 2 caracteres consecutivos do nome" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7c" class="ml-2 text-gray-700">Não conter nome da conta ou mais de 2 caracteres consecutivos de partes do nome completo do usuário</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7d" name="q7" value="Conter caracteres de 3 de 4 categorias" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7d" class="ml-2 text-gray-700">Conter caracteres de 3 destas 4 categorias (Maiúsculos, Minúsculos, Números, Não alfabéticos)</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7e" name="q7" value="Troca a cada 90 dias" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7e" class="ml-2 text-gray-700">Troca em intervalos máximos de 90 dias</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="q7f" name="q7" value="Troca a cada 180 dias" class="form-checkbox text-blue-600 rounded">
+                                    <label for="q7f" class="ml-2 text-gray-700">Troca em intervalos máximos de 180 dias</label>
+                                </div>
+                                <div class="feedback" id="q7-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q12-group">
+                                <label aria-labelledby="q12-label">10. Qual a classificação de sigilo de "Dado Pessoal" na Política de Segurança da Informação?</label>
+                                <div id="q12-label" class="sr-only">Classificação de sigilo de Dado Pessoal</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q12a" name="q12" value="Publica" class="form-radio text-blue-600">
+                                    <label for="q12a" class="ml-2 text-gray-700">Pública</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q12b" name="q12" value="Corporativa" class="form-radio text-blue-600">
+                                    <label for="q12b" class="ml-2 text-gray-700">Corporativa</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q12c" name="q12" value="Confidencial" class="form-radio text-blue-600">
+                                    <label for="q12c" class="ml-2 text-gray-700">Confidencial</label>
+                                </div>
+                                <div class="feedback" id="q12-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q13-group">
+                                <label for="q13">11. O que é proibido em relação à instalação de software, conforme a Política de Segurança da Informação?</label>
+                                <textarea id="q13" name="q13" rows="3" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q13-feedback"></textarea>
+                                <div class="feedback" id="q13-feedback"></div>
+                            </div>
+
+                            <!-- Seção: Política de Trabalho Remoto (SG-PO-003) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Política de Trabalho Remoto</h3>
+                            <div class="form-group" id="q4-group">
+                                <label aria-labelledby="q4-label">12. De acordo com a Política de Trabalho Remoto, é permitido usar e-mails pessoais para tratar de assuntos corporativos?</label>
+                                <div id="q4-label" class="sr-only">Permissão para usar e-mails pessoais para assuntos corporativos</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q4a" name="q4" value="Sim" class="form-radio text-blue-600">
+                                    <label for="q4a" class="ml-2 text-gray-700">Sim</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q4b" name="q4" value="Não" class="form-radio text-blue-600">
+                                    <label for="q4b" class="ml-2 text-gray-700">Não</label>
+                                </div>
+                                <div class="feedback" id="q4-feedback"></div>
+                            </div>
+
+                            <!-- Seção: Procedimento Gestão de Acesso (SG-PR-010) -->
+                            <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Procedimento Gestão de Acesso</h3>
+                            <div class="form-group" id="q5-group">
+                                <label for="q5">13. Qual é a principal responsabilidade da Coordenadoria de Segurança e Patrimônio no controle de acesso físico, conforme o Procedimento Gestão de Acesso?</label>
+                                <input type="text" id="q5" name="q5" placeholder="A sua resposta aqui..." class="rounded-lg" aria-describedby="q5-feedback">
+                                <div class="feedback" id="q5-feedback"></div>
+                            </div>
+                            <div class="form-group" id="q14-group">
+                                <label aria-labelledby="q14-label">14. No Procedimento Gestão de Acesso, qual a cor do crachá para "Funcionário determinado" e "Prestador de serviço"?</label>
+                                <div id="q14-label" class="sr-only">Cor do crachá para Funcionário determinado e Prestador de serviço</div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q14a" name="q14" value="Determinado: Verde, Prestador: Laranja" class="form-radio text-blue-600">
+                                    <label for="q14a" class="ml-2 text-gray-700">Funcionário determinado: Verde; Prestador de serviço: Laranja</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q14b" name="q14" value="Determinado: Azul, Prestador: Verde" class="form-radio text-blue-600">
+                                    <label for="q14b" class="ml-2 text-gray-700">Funcionário determinado: Azul; Prestador de serviço: Verde</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="radio" id="q14c" name="q14" value="Determinado: Laranja, Prestador: Azul" class="form-radio text-blue-600">
+                                    <label for="q14c" class="ml-2 text-gray-700">Funcionário determinado: Laranja; Prestador de serviço: Azul</label>
+                                </div>
+                                <div class="feedback" id="q14-feedback"></div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                                Enviar Respostas
+                            </button>
+                        </form>
+
+                        <div id="quiz-results" class="result-box hidden">
+                            <h3>Resultados do Questionário</h3>
+                            <p id="score-display"></p>
+                            <div id="individual-feedback"></div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- Rodapé da Seção Direita -->
+                <div class="mt-8 pt-6 border-t border-gray-200 text-sm text-gray-500">
+                    Resumo gerado com base nas documentações da Fundação Cesgranrio.
+                    Última atualização: 18 de Julho de 2025
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('quizForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Previne o envio padrão do formulário
+
+            const answers = {
+                q1: "Definir regras e prover medidas rápidas e eficazes para os processos críticos de TI em casos de incidentes graves ou desastres, garantindo a continuidade da prestação de serviços do Setor de Avaliação Digital.",
+                q2: ["Confidencialidade", "Integridade", "Disponibilidade"],
+                q3: "Nível 5 (N5) trata de incidentes de segurança, ou seja, eventos que indicam ataques em andamento ou comprometimento do ambiente. Seu foco principal é a contenção, erradicação e recuperação do incidente, minimizando impactos para a organização.",
+                q4: "Não",
+                q5: "A principal responsabilidade da Coordenadoria de Segurança e Patrimônio é controlar o acesso físico ao edifício sede, incluindo a criação e manutenção de perfis de acesso, associação de crachás e liberação/revogação de direitos de acesso físico.",
+                q6: "Minimizar os riscos ao negócio, garantir a segurança da informação e conformidade com requisitos legais.",
+                q7: ["Minimo 8 caracteres", "Nao conter nome da conta ou 2 caracteres consecutivos do nome", "Conter caracteres de 3 de 4 categorias", "Troca a cada 180 dias"],
+                q8: "RPO (Recovery Point Objective) é a frequência ou o tempo necessário que backups precisam ser feitos para que dados não sejam perdidos. RTO (Recovery Time Objective) é o período de tempo após um incidente dentro do qual um produto ou serviço ou atividade é retomada.",
+                q9: "A Coordenadoria de Avaliação Digital, que é responsável por desenvolver de forma segura a solução do Gerenciador de Provas Online GPO, que faz parte de um ecossistema para aplicação de Avaliação Digital segura, que por sua vez compreende o GPO Web, o GPO Safe Browser e o GPO Pendrive.",
+                q10: "Superintendência de Tecnologia e Inovação",
+                q11: ["Service Desk", "Ligacao telefônica"],
+                q12: "Confidencial",
+                q13: "É proibida a instalação de software, sem que estejam devidamente identificados, licenciados e homologados pela FUNDAÇÃO CESGRANRIO. Não é permitido o download de software, programas, jogos, executáveis da Internet ou de quaisquer outros meios para os computadores da FUNDAÇÃO CESGRANRIO sem o devido processo formal.",
+                q14: "Determinado: Verde, Prestador: Laranja"
+            };
+
+            let score = 0;
+            const totalQuestions = Object.keys(answers).length;
+            const individualFeedbackDiv = document.getElementById('individual-feedback');
+            individualFeedbackDiv.innerHTML = ''; // Limpa feedbacks anteriores
+
+            // Função para normalizar strings (remover acentos, converter para minúsculas e remover espaços extras)
+            const normalizeString = (str) => {
+                return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, ' ');
+            };
+
+            // Função para verificar respostas de texto
+            const checkTextAnswer = (qId, expectedAnswer, feedbackKeywords) => {
+                const userAnswer = normalizeString(document.getElementById(qId).value);
+                const feedbackElement = document.getElementById(`${qId}-feedback`);
+                let isCorrect = false;
+                for (const keyword of feedbackKeywords) {
+                    if (userAnswer.includes(normalizeString(keyword))) {
+                        isCorrect = true;
+                        break;
+                    }
+                }
+
+                if (isCorrect) {
+                    feedbackElement.textContent = "Correto!";
+                    feedbackElement.className = "feedback correct";
+                    score++;
+                } else {
+                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedAnswer}`;
+                    feedbackElement.className = "feedback incorrect";
+                }
+                individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qId.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
+            };
+
+            // Função para verificar respostas de múltipla escolha (checkbox)
+            const checkCheckboxAnswer = (qName, expectedValues) => {
+                const selectedValues = Array.from(document.querySelectorAll(`input[name="${qName}"]:checked`)).map(cb => cb.value);
+                const feedbackElement = document.getElementById(`${qName}-feedback`);
+                const isCorrect = selectedValues.length === expectedValues.length && expectedValues.every(val => selectedValues.includes(val));
+
+                if (isCorrect) {
+                    feedbackElement.textContent = "Correto!";
+                    feedbackElement.className = "feedback correct";
+                    score++;
+                } else {
+                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedValues.join(', ')}. Sua resposta: ${selectedValues.join(', ')}`;
+                    feedbackElement.className = "feedback incorrect";
+                }
+                individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qName.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
+            };
+
+            // Função para verificar respostas de múltipla escolha (radio)
+            const checkRadioAnswer = (qName, expectedValue) => {
+                const selectedValue = document.querySelector(`input[name="${qName}"]:checked`)?.value;
+                const feedbackElement = document.getElementById(`${qName}-feedback`);
+
+                if (selectedValue === expectedValue) {
+                    feedbackElement.textContent = "Correto!";
+                    feedbackElement.className = "feedback correct";
+                    score++;
+                } else {
+                    feedbackElement.textContent = `Incorreto. Resposta esperada: ${expectedValue}. Sua resposta: ${selectedValue || 'Nenhuma'}`;
+                    feedbackElement.className = "feedback incorrect";
+                }
+                individualFeedbackDiv.innerHTML += `<p><strong>Questão ${qName.replace('q', '')}:</strong> <span class="${feedbackElement.className.includes('correct') ? 'text-green-600' : 'text-red-600'}">${feedbackElement.textContent}</span></p>`;
+            };
+
+
+            // Chamadas das funções de verificação para cada questão
+            // Plano de Continuidade de Negócio
+            checkTextAnswer('q1', answers.q1, ["continuar negócio", "garantir continuidade", "prover medidas rápidas e eficazes"]);
+            checkTextAnswer('q8', answers.q8, ["rpo frequencia", "rto tempo", "rpo tempo necessario", "rto periodo de tempo"]);
+
+            // Plano do Sistema de Gestão
+            checkTextAnswer('q6', answers.q6, ["minimizar riscos", "garantir segurança", "conformidade legal"]);
+            checkTextAnswer('q9', answers.q9, ["coordenadoria de avaliação digital", "gpo web", "gpo safe browser", "gpo pendrive"]);
+            checkTextAnswer('q10', answers.q10, ["superintendência de tecnologia e inovação", "superintendencia de tecnologia e inovacao"]);
+
+            // Procedimento Gestão de Incidente
+            checkTextAnswer('q3', answers.q3, ["incidentes de segurança", "contenção", "erradicação", "recuperação"]);
+            checkCheckboxAnswer('q11', answers.q11);
+
+            // Política da Segurança da Informação
+            checkCheckboxAnswer('q2', answers.q2);
+            checkCheckboxAnswer('q7', answers.q7);
+            checkRadioAnswer('q12', answers.q12);
+            checkTextAnswer('q13', answers.q13, ["proibida a instalação de software", "sem que estejam devidamente identificados", "licenciados e homologados", "não é permitido o download de software"]);
+
+            // Política de Trabalho Remoto
+            checkRadioAnswer('q4', answers.q4);
+
+            // Procedimento Gestão de Acesso
+            checkTextAnswer('q5', answers.q5, ["controlar acesso físico", "criação e manutenção de perfis de acesso", "associação de crachás"]);
+            checkRadioAnswer('q14', answers.q14);
+
+
+            // Exibe os resultados gerais
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = `Você acertou ${score} de ${totalQuestions} perguntas.`;
+            document.getElementById('quiz-results').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
