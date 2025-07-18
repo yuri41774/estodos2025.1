@@ -13,11 +13,51 @@
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5; /* Cor de fundo suave */
             display: flex;
-            justify-content: center;
+            flex-direction: column; /* Alterado para coluna para acomodar o header */
+            justify-content: flex-start; /* Alinhado ao topo */
             align-items: center;
             min-height: 100vh;
-            padding: 1rem; /* Padding geral para o corpo */
+            padding: 0; /* Removido padding do body para controle total do header/main */
         }
+        /* Estilos para o cabeçalho */
+        header {
+            width: 100%;
+            background-color: #1e40af; /* Cor de fundo do cabeçalho (azul escuro) */
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Permite que os itens do cabeçalho quebrem linha em telas pequenas */
+        }
+        header h1 {
+            color: #ffffff; /* Texto branco */
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0; /* Removido margin-bottom padrão */
+        }
+        header button {
+            background-color: #3b82f6; /* Azul mais claro para o botão */
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        header button:hover {
+            background-color: #2563eb; /* Azul um pouco mais escuro no hover */
+        }
+
+        /* Estilos para o container principal (main) */
+        main {
+            flex-grow: 1; /* Permite que o main ocupe o espaço restante */
+            width: 100%;
+            max-width: 6xl; /* Mantém a largura máxima do conteúdo */
+            padding: 1rem; /* Padding para o conteúdo principal */
+            margin-top: 1rem; /* Espaçamento entre o header e o main */
+        }
+
         /* Estilos adicionais para melhor visualização do conteúdo e espaçamento */
         h1, h2, h3, h4 {
             margin-bottom: 0.75rem;
@@ -47,7 +87,9 @@
             color: #374151;
         }
         .form-group input[type="text"],
-        .form-group textarea {
+        .form-group textarea,
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #d1d5db;
@@ -58,7 +100,9 @@
             transition: border-color 0.2s ease-in-out;
         }
         .form-group input[type="text"]:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
@@ -94,9 +138,63 @@
             color: #1f2937; /* gray-800 */
             margin-bottom: 0.5rem;
         }
+
+        /* Estilos para o modal de login */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Garante que o modal esteja acima de outros elementos */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px; /* Largura máxima para o modal */
+            position: relative;
+            transform: translateY(-20px); /* Efeito de entrada */
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280; /* gray-500 */
+        }
+        .modal-close-button:hover {
+            color: #374151; /* gray-700 */
+        }
     </style>
 </head>
 <body class="antialiased">
+
+    <!-- Cabeçalho com botão de Login -->
+    <header role="banner">
+        <h1 class="text-xl md:text-2xl">Documentação Cesgranrio</h1>
+        <button id="loginButton" type="button" aria-label="Fazer login">Login</button>
+    </header>
 
     <!-- Container principal que centraliza o card -->
     <main class="w-full max-w-6xl mx-auto p-4 md:p-6 lg:p-8" role="main">
@@ -499,7 +597,270 @@
         </div>
     </main>
 
-    <script>
+    <!-- Modal de Login/Cadastro -->
+    <div id="authModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <div class="modal-content">
+            <button id="closeAuthModalButton" class="modal-close-button" aria-label="Fechar janela de autenticação">&times;</button>
+            <h2 id="auth-modal-title" class="text-2xl font-bold text-gray-900 mb-6 text-center">Login</h2>
+
+            <!-- Formulário de Login -->
+            <form id="loginFormAuth" class="space-y-4">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail:</label>
+                    <input type="email" id="loginEmail" name="loginEmail" placeholder="seu.email@exemplo.com" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha:</label>
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Sua senha" required class="rounded-lg">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+                    Entrar
+                </button>
+                <div class="text-center text-sm text-gray-600 mt-4">
+                    <a href="#" class="text-blue-600 hover:underline" id="forgotPasswordLink">Esqueceu a senha?</a>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="button" id="googleLoginButton" class="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition duration-300 shadow-md flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.675 12.115c0-.78-.068-1.535-.195-2.262H12v4.512h6.182c-.276 1.388-1.07 2.56-2.28 3.348l-.011.011 3.85 2.99a10.027 10.027 0 003.064-7.609z" fill="#4285F4"/>
+                            <path d="M12 23c2.972 0 5.46-1.01 7.28-2.75l-3.85-2.99a5.617 5.617 0 01-3.43 1.18c-2.651 0-4.906-1.79-5.71-4.22H2.96v3.018A9.993 9.993 0 0012 23z" fill="#34A853"/>
+                            <path d="M6.29 14.28c-.2-.59-.31-1.23-.31-1.88s.11-1.29.31-1.88V7.59H2.96A9.993 9.993 0 002 12c0 1.33.308 2.6.85 3.75l3.44-2.72z" fill="#FBBC04"/>
+                            <path d="M12 5.5c1.62 0 3.06.56 4.21 1.64L19.49 3.4C17.61 1.25 14.97 0 12 0A9.993 9.993 0 002.85 7.59l3.44 2.72C7.094 8.29 9.349 6.5 12 6.5z" fill="#EA4335"/>
+                        </svg>
+                        Login com Google
+                    </button>
+                </div>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Não tem uma conta? <a href="#" class="text-blue-600 hover:underline" id="showRegisterForm">Cadastre-se</a>
+                </p>
+                <div id="loginMessage" class="feedback text-center"></div>
+            </form>
+
+            <!-- Formulário de Cadastro -->
+            <form id="registerForm" class="space-y-4 hidden">
+                <div class="form-group">
+                    <label for="registerEmail">E-mail:</label>
+                    <input type="email" id="registerEmail" name="registerEmail" placeholder="seu.email@exemplo.com" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha:</label>
+                    <input type="password" id="registerPassword" name="registerPassword" placeholder="Crie uma senha" required class="rounded-lg">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmar Senha:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha" required class="rounded-lg">
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                    Cadastrar
+                </button>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Já tem uma conta? <a href="#" class="text-blue-600 hover:underline" id="showLoginForm">Fazer Login</a>
+                </p>
+                <div id="registerMessage" class="feedback text-center"></div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Importa as funções necessárias do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+        // Configuração do Firebase (substitua pelos seus dados reais)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxOLDAONq1FMZ6Cur3NXk1DUGhExMenGI",
+            authDomain: "cesgranrio-d4603.firebaseapp.com",
+            projectId: "cesgranrio-d4603",
+            storageBucket: "cesgranrio-d4603.firebasestorage.app",
+            messagingSenderId: "973842716091",
+            appId: "1:973842716091:web:650c2649a1eb4f5dd8209e",
+            measurementId: "G-HHT7R7L8YP"
+        };
+
+        // Inicializa o Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app); // Obtém a instância de autenticação
+
+        // Elementos do DOM relacionados ao modal de autenticação
+        const authModal = document.getElementById('authModal');
+        const loginButton = document.getElementById('loginButton');
+        const closeAuthModalButton = document.getElementById('closeAuthModalButton');
+        const loginFormAuth = document.getElementById('loginFormAuth'); // Renomeado para evitar conflito com quizForm
+        const registerForm = document.getElementById('registerForm');
+        const showRegisterFormLink = document.getElementById('showRegisterForm');
+        const showLoginFormLink = document.getElementById('showLoginForm');
+        const googleLoginButton = document.getElementById('googleLoginButton');
+        const authModalTitle = document.getElementById('auth-modal-title');
+        const loginMessageDiv = document.getElementById('loginMessage');
+        const registerMessageDiv = document.getElementById('registerMessage');
+
+        // Listener para o estado de autenticação do usuário
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário está logado
+                loginButton.textContent = `Olá, ${user.displayName || user.email}`;
+                loginButton.removeEventListener('click', openAuthModal); // Remove o listener de abrir modal
+                loginButton.addEventListener('click', signOutUser); // Adiciona listener para fazer logout
+            } else {
+                // Usuário está deslogado
+                loginButton.textContent = 'Login';
+                loginButton.removeEventListener('click', signOutUser); // Remove o listener de fazer logout
+                loginButton.addEventListener('click', openAuthModal); // Adiciona listener para abrir modal
+            }
+        });
+
+        // Função para abrir o modal de autenticação
+        function openAuthModal() {
+            authModal.classList.add('show');
+            authModalTitle.textContent = 'Login';
+            loginFormAuth.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginMessageDiv.textContent = ''; // Limpa mensagens anteriores
+            registerMessageDiv.textContent = '';
+            document.getElementById('loginEmail').focus(); // Foca o campo de e-mail
+        }
+
+        // Função para fazer logout
+        function signOutUser() {
+            signOut(auth).then(() => {
+                // Logout bem-sucedido
+                // alert('Você foi desconectado.'); // Usando alert temporariamente, idealmente usar um modal customizado
+                // Melhorar o feedback de logout, por exemplo, com uma mensagem no próprio modal ou na tela
+            }).catch((error) => {
+                // Erro ao fazer logout
+                console.error("Erro ao fazer logout:", error);
+                // alert('Erro ao desconectar: ' + error.message); // Usando alert temporariamente
+            });
+        }
+
+        // Listeners para o modal de autenticação
+        loginButton.addEventListener('click', openAuthModal); // Configuração inicial, será substituída por onAuthStateChanged
+        closeAuthModalButton.addEventListener('click', () => {
+            authModal.classList.remove('show');
+            loginButton.focus(); // Retorna o foco para o botão de login
+        });
+        authModal.addEventListener('click', (event) => {
+            if (event.target === authModal) {
+                authModal.classList.remove('show');
+                loginButton.focus();
+            }
+        });
+
+        // Alternar entre formulários de Login e Cadastro
+        showRegisterFormLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModalTitle.textContent = 'Cadastro';
+            loginFormAuth.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            registerMessageDiv.textContent = ''; // Limpa mensagens
+            document.getElementById('registerEmail').focus();
+        });
+
+        showLoginFormLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authModalTitle.textContent = 'Login';
+            loginFormAuth.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            loginMessageDiv.textContent = ''; // Limpa mensagens
+            document.getElementById('loginEmail').focus();
+        });
+
+        // Lógica de Login com E-mail e Senha
+        loginFormAuth.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginMessageDiv.textContent = ''; // Limpa mensagens anteriores
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginMessageDiv.textContent = 'Login bem-sucedido!';
+                loginMessageDiv.className = "feedback correct";
+                setTimeout(() => {
+                    authModal.classList.remove('show');
+                    loginButton.focus();
+                }, 1000); // Fecha o modal após 1 segundo
+            } catch (error) {
+                let errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = "E-mail ou senha inválidos.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Formato de e-mail inválido.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
+                }
+                loginMessageDiv.textContent = errorMessage;
+                loginMessageDiv.className = "feedback incorrect";
+                console.error("Erro de login:", error);
+            }
+        });
+
+        // Lógica de Login com Google
+        googleLoginButton.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                loginMessageDiv.textContent = 'Login com Google bem-sucedido!';
+                loginMessageDiv.className = "feedback correct";
+                setTimeout(() => {
+                    authModal.classList.remove('show');
+                    loginButton.focus();
+                }, 1000); // Fecha o modal após 1 segundo
+            } catch (error) {
+                let errorMessage = "Erro ao fazer login com Google.";
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = "Login com Google cancelado.";
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    errorMessage = "Já existe uma janela de login aberta. Por favor, feche-a e tente novamente.";
+                } else if (error.code === 'auth/auth-domain-config-required' || error.code === 'auth/configuration-not-found') {
+                    errorMessage = "Erro de configuração do Firebase para login com Google. Por favor, verifique se o provedor Google está ativado e se o domínio da sua aplicação está adicionado aos domínios autorizados no console do Firebase (Autenticação > Configurações > Domínios autorizados).";
+                }
+                loginMessageDiv.textContent = errorMessage;
+                loginMessageDiv.className = "feedback incorrect";
+                console.error("Erro de login com Google:", error);
+            }
+        });
+
+        // Lógica de Cadastro de Nova Conta
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            registerMessageDiv.textContent = ''; // Limpa mensagens anteriores
+
+            if (password !== confirmPassword) {
+                registerMessageDiv.textContent = "As senhas não coincidem.";
+                registerMessageDiv.className = "feedback incorrect";
+                return;
+            }
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                registerMessageDiv.textContent = 'Cadastro bem-sucedido! Você já está logado.';
+                registerMessageDiv.className = "feedback correct";
+                setTimeout(() => {
+                    authModal.classList.remove('show');
+                    loginButton.focus();
+                }, 1000); // Fecha o modal após 1 segundo
+            } catch (error) {
+                let errorMessage = "Erro ao cadastrar.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "Este e-mail já está em uso.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "A senha é muito fraca (mínimo de 6 caracteres).";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Formato de e-mail inválido.";
+                }
+                registerMessageDiv.textContent = errorMessage;
+                registerMessageDiv.className = "feedback incorrect";
+                console.error("Erro de cadastro:", error);
+            }
+        });
+
+        // Lógica do questionário (mantida do código anterior)
         document.getElementById('quizForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Previne o envio padrão do formulário
 
@@ -623,3 +984,5 @@
     </script>
 </body>
 </html>
+```
+I made some changes. Adicionei uma mensagem de erro mais informativa para o erro `auth/configuration-not-found` no bloco de login com o Google. Este erro geralmente indica que o provedor de autenticação do Google não está habilitado ou o domínio da sua aplicação não está autorizado nas configurações do Firebase Console. A mensagem agora orienta o usuário a verificar essas configurações no console do Fireba
