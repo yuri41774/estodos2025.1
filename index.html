@@ -39,31 +39,59 @@
         .collapsible-arrow.rotated {
             transform: rotate(90deg);
         }
-        .hidden {
-            display: none;
+        /* Estilos personalizados para o menu hambúrguer para uma transição suave */
+        #mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        #mobile-menu.open {
+            max-height: 500px; /* Um valor alto o suficiente para caber o conteúdo */
         }
     </style>
     <!-- O CÓDIGO CSS TERMINA AQUI -->
 
 </head>
 <body class="p-4 sm:p-8 md:p-12">
+    <!-- Novo cabeçalho de navegação -->
+    <nav class="bg-white rounded-xl shadow-lg p-4 flex items-center justify-between mb-8 md:mb-12 sticky top-4 z-50">
+        <h1 class="text-2xl md:text-3xl font-bold text-indigo-700">A Bússola</h1>
+        
+        <!-- Botão Hamburguer para Mobile -->
+        <button id="hamburger-btn" class="p-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 md:hidden transition-all duration-300 hover:bg-gray-100">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+
+        <!-- Menu de Navegação -->
+        <ul id="nav-links" class="hidden md:flex md:items-center space-x-6">
+            <li><a href="#" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Início</a></li>
+            <li><a href="#secao1" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Reino e Justiça</a></li>
+            <li><a href="#secao2" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Relação com Deus</a></li>
+            <li><a href="#secao3" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Relações Humanas</a></li>
+            <li><a href="#secao4" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Trabalho e Finanças</a></li>
+            <li><a href="#secao5" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Tempo e Oração</a></li>
+            <li><a href="#secao6" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Corpo e Mente</a></li>
+            <li><a href="#conclusao" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Próximos Passos</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Menu Dropdown para Mobile -->
+    <ul id="mobile-menu" class="bg-white rounded-xl shadow-lg mb-8 md:hidden flex flex-col items-center">
+        <li><a href="#" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Início</a></li>
+        <li><a href="#secao1" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Reino e Justiça</a></li>
+        <li><a href="#secao2" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Relação com Deus</a></li>
+        <li><a href="#secao3" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Relações Humanas</a></li>
+        <li><a href="#secao4" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Trabalho e Finanças</a></li>
+        <li><a href="#secao5" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Tempo e Oração</a></li>
+        <li><a href="#secao6" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center">Corpo e Mente</a></li>
+        <li><a href="#conclusao" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center">Próximos Passos</a></li>
+    </ul>
+
     <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10">
         <header class="text-center mb-10">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-2 leading-tight">A Bússola da Vida Cristã</h1>
-            <p class="text-xl sm:text-2xl font-medium text-gray-600">Alinhando suas Prioridades com o Coração de Deus</p>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-2 leading-tight">Alinhando suas Prioridades com o Coração de Deus</h1>
             <div class="w-24 h-1 mx-auto bg-indigo-500 rounded-full mt-4"></div>
         </header>
-
-        <!-- Controles de Áudio -->
-        <div class="flex flex-col items-center justify-center mb-6">
-            <button id="playButton" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105">
-                Ouvir Artigo
-            </button>
-            <button id="stopButton" class="hidden bg-red-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 ease-in-out transform hover:scale-105 mt-2">
-                Parar
-            </button>
-            <span id="statusMessage" class="mt-2 text-sm text-gray-500"></span>
-        </div>
 
         <p class="text-gray-700 leading-relaxed text-lg mb-8">
             Você já se sentiu sobrecarregado pelas demandas diárias? Trabalho, família, finanças, ministério... A vida moderna nos apresenta uma infinidade de caminhos, mas para o cristão, a única direção segura é aquela que aponta para o Reino. Este estudo é o seu guia para recalibrar suas prioridades e viver uma vida de propósito genuíno, alinhada com a vontade de Deus.
@@ -72,7 +100,7 @@
         <hr class="my-8 border-gray-200">
 
         <!-- Seção 1: O Norte Verdadeiro -->
-        <div class="mb-10">
+        <div class="mb-10" id="secao1">
             <div class="collapsible-header p-4" data-target="section1-content">
                 <h3 class="text-2xl font-bold text-gray-800">1. O Norte Verdadeiro: O Reino e Sua Justiça</h3>
                 <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
@@ -103,7 +131,7 @@
         <hr class="my-8 border-gray-200">
 
         <!-- Seção 2: O Combustível do Espírito -->
-        <div class="mb-10">
+        <div class="mb-10" id="secao2">
             <div class="collapsible-header p-4" data-target="section2-content">
                 <h3 class="text-2xl font-bold text-gray-800">2. O Combustível do Espírito: Sua Relação com Deus</h3>
                 <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
@@ -132,7 +160,7 @@
         <hr class="my-8 border-gray-200">
 
         <!-- Seção 3: O Espelho da Alma -->
-        <div class="mb-10">
+        <div class="mb-10" id="secao3">
             <div class="collapsible-header p-4" data-target="section3-content">
                 <h3 class="text-2xl font-bold text-gray-800">3. O Espelho da Alma: Suas Relações Humanas</h3>
                 <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
@@ -161,7 +189,7 @@
         <hr class="my-8 border-gray-200">
 
         <!-- Seção 4: O Valor da Ação -->
-        <div class="mb-10">
+        <div class="mb-10" id="secao4">
             <div class="collapsible-header p-4" data-target="section4-content">
                 <h3 class="text-2xl font-bold text-gray-800">4. O Valor da Ação: Trabalho e Finanças</h3>
                 <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
@@ -186,16 +214,42 @@
                 </div>
             </div>
         </div>
-
+        
         <hr class="my-8 border-gray-200">
 
-        <!-- Seção 5: Cuidando do Templo -->
-        <div class="mb-10">
+        <!-- Seção 5: O Gerenciamento do Tempo -->
+        <div class="mb-10" id="secao5">
             <div class="collapsible-header p-4" data-target="section5-content">
-                <h3 class="text-2xl font-bold text-gray-800">5. Cuidando do Templo: Seu Corpo e Mente</h3>
+                <h3 class="text-2xl font-bold text-gray-800">5. O Gerenciamento do Tempo: A Oração e a Sabedoria</h3>
                 <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
             </div>
             <div id="section5-content" class="collapsible-content mt-4">
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Em um mundo de distrações, nosso tempo é um dos bens mais preciosos. A forma como o gerenciamos é uma declaração direta de nossas prioridades. A Bíblia nos instrui a "remir o tempo" ($$\epsilon\xi\alpha\gamma\omicron\rho\alpha\zeta\omicron\mu\epsilon\nu\omicron\iota$$), que significa aproveitar cada momento com sabedoria, pois os dias são maus (<a href="https://www.bible.com/pt/bible/162/EPH.5.15-16" target="_blank" class="text-blue-600 hover:underline">Efésios 5:15-16</a>).
+                </p>
+                <h4 class="text-xl font-semibold text-gray-800 mb-2 mt-6">A Prioridade da Oração e da Palavra</h4>
+                <p class="text-gray-700 leading-relaxed mb-2">
+                    A primeira e mais importante "agenda" do seu dia deve ser a sua comunhão com Deus. Antes de checar e-mails ou redes sociais, busque a Ele. Dê a Ele as primícias do seu tempo, e Ele abençoará o restante. Isso não é apenas uma disciplina, mas um ato de confiança.
+                </p>
+                <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                    <p class="font-bold text-gray-800">Questões para a Alma:</p>
+                    <ul class="list-disc list-inside text-gray-700 mt-2">
+                        <li>O que você precisaria remover da sua agenda para criar um tempo inegociável com Deus?</li>
+                        <li>Como sua lista de afazeres reflete a sua fé e a sua busca pelo Reino?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-8 border-gray-200">
+        
+        <!-- Seção 6: Cuidando do Templo -->
+        <div class="mb-10" id="secao6">
+            <div class="collapsible-header p-4" data-target="section6-content">
+                <h3 class="text-2xl font-bold text-gray-800">6. Cuidando do Templo: Seu Corpo e Mente</h3>
+                <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
+            </div>
+            <div id="section6-content" class="collapsible-content mt-4">
                 <p class="text-gray-700 leading-relaxed mb-4">
                     Para servir aos outros com excelência, você precisa estar bem. Priorizar o descanso e a renovação não é sinal de fraqueza, mas um ato de fé e sabedoria, confiando que Deus cuida de tudo enquanto você se regenera.
                 </p>
@@ -208,10 +262,10 @@
         <hr class="my-8 border-gray-200">
 
         <!-- Conclusão e Desafio Prático -->
-        <div class="text-center mt-10">
+        <div class="text-center mt-10" id="conclusao">
             <h3 class="text-2xl font-bold text-indigo-700 mb-4">Próximos Passos: O Seu Plano</h3>
             <p class="text-gray-700 leading-relaxed text-lg mb-6">
-                Viver com as prioridades de Deus é uma jornada contínua, não um evento único. Comece hoje a recalibrar sua vida com este plano simples.
+                A vida cristã é uma jornada de reajustes constantes. A cada dia, somos convidados a alinhar nossa bússola interior para que ela aponte para o Reino. Que este estudo sirva como um lembrete de que as prioridades de Deus não são fardos, mas a chave para uma vida de verdadeira paz e propósito.
             </p>
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-indigo-50 p-6 rounded-xl border-2 border-indigo-200 shadow-md">
@@ -250,128 +304,13 @@
             });
         });
 
-        // Configuração da Leitura por Voz
-        const playBtn = document.getElementById('playButton');
-        const stopBtn = document.getElementById('stopButton');
-        const statusMsg = document.getElementById('statusMessage');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-        if ('speechSynthesis' in window) {
-            let isSpeaking = false;
-            let currentUtterance = null;
-            let synth = window.speechSynthesis;
-
-            function speakText() {
-                if (isSpeaking) {
-                    synth.cancel();
-                    isSpeaking = false;
-                    return;
-                }
-
-                const paragraphs = document.querySelectorAll('p, h1, h3, h4');
-                let fullText = '';
-                paragraphs.forEach(p => {
-                    fullText += p.innerText + '. ';
-                });
-
-                currentUtterance = new SpeechSynthesisUtterance(fullText);
-                currentUtterance.lang = 'pt-BR';
-
-                currentUtterance.onstart = () => {
-                    isSpeaking = true;
-                    playBtn.classList.add('hidden');
-                    stopBtn.classList.remove('hidden');
-                    statusMsg.innerText = 'Lendo...';
-                };
-
-                currentUtterance.onend = () => {
-                    isSpeaking = false;
-                    playBtn.classList.remove('hidden');
-                    stopBtn.classList.add('hidden');
-                    statusMsg.innerText = 'Leitura concluída.';
-                };
-
-                currentUtterance.onerror = (event) => {
-                    isSpeaking = false;
-                    playBtn.classList.remove('hidden');
-                    stopBtn.classList.add('hidden');
-                    statusMsg.innerText = 'Erro na leitura.';
-                    console.error('SpeechSynthesisUtterance.onerror', event.error);
-                };
-
-                synth.speak(currentUtterance);
-            }
-
-            function stopSpeaking() {
-                if (isSpeaking) {
-                    synth.cancel();
-                    isSpeaking = false;
-                }
-            }
-
-            playBtn.addEventListener('click', speakText);
-            stopBtn.addEventListener('click', stopSpeaking);
-        } else {
-            statusMsg.innerText = 'Seu navegador não suporta leitura por voz.';
-            playBtn.classList.add('hidden');
-        }
-    </script>
-</body>
-</html>        }
-        .footer {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 2px solid #a37a53;
-        }
-    </style>
-</head>
-<body class="p-4 md:p-8">
-
-    <div class="container mx-auto">
-        <header class="header text-center">
-            <h1 class="text-5xl font-bold text-center text-gray-800">O Hobbit</h1>
-            <p class="mt-2 text-xl italic text-gray-600">Uma Aventura de J.R.R. Tolkien</p>
-        </header>
-
-        <main id="main-content">
-            <!-- Os artigos serão gerados por JavaScript aqui -->
-        </main>
-
-        <footer class="footer text-center text-sm text-gray-500">
-            <p>&copy; 2024 Jornada Inesperada. Todos os direitos reservados.</p>
-        </footer>
-    </div>
-
-    <script>
-        const artigos = [
-            {
-                titulo: "A História de Bilbo Bolseiro",
-                imagem: "https://via.placeholder.com/600x400/8c5b3e/fff?text=Bilbo+Bolseiro",
-                texto: "Bilbo Bolseiro é um hobbit pacato que adora uma vida tranquila no Condado. Sua rotina muda completamente quando o mago Gandalf e um grupo de 13 anões chegam à sua porta, procurando um 'ladrão' para uma missão perigosa."
-            },
-            {
-                titulo: "O Mago Gandalf",
-                imagem: "https://via.placeholder.com/600x400/6b7280/fff?text=Gandalf",
-                texto: "Gandalf, o Cinzento, é um mago poderoso e enigmático que age como o mentor de Bilbo. Ele é o principal responsável por convencer o hobbit a se juntar à aventura, vendo nele uma coragem que Bilbo nem imaginava possuir."
-            },
-            {
-                titulo: "A Busca por Erebor",
-                imagem: "https://via.placeholder.com/600x400/7c3a21/fff?text=Erebor",
-                texto: "A missão dos anões e de Bilbo é recuperar o tesouro de sua antiga terra, a Montanha Solitária (Erebor), que foi roubado pelo terrível dragão Smaug."
-            }
-        ];
-
-        const main = document.getElementById('main-content');
-
-        artigos.forEach(artigo => {
-            const articleElement = document.createElement('article');
-            articleElement.className = 'article-card';
-            articleElement.innerHTML = `
-                <h2 class="article-title text-3xl font-bold mb-4">${artigo.titulo}</h2>
-                <img src="${artigo.imagem}" alt="${artigo.titulo}" class="w-full rounded-lg mb-4">
-                <p class="text-base leading-relaxed">${artigo.texto}</p>
-            `;
-            main.appendChild(articleElement);
+        hamburgerBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
         });
     </script>
 </body>
 </html>
+
