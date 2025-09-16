@@ -20,7 +20,42 @@
         }
         .btn-laranja {
             background-color: var(--laranja-plenitude);
-            color        </div>
+            color: white;
+            border: none;
+        }
+        .btn-laranja:hover {
+            background-color: #e25f0d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-laranja">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">C.I. Plenitude</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cultos">Cultos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="bg-light py-5 text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold text-laranja">Bem-vindo à Comunidade Internacional Plenitude</h1>
+            <p class="lead">Um lugar para adorar, aprender e crescer na fé</p>
+            <a href="#cultos" class="btn btn-laranja btn-lg">Participe Conosco</a>
+        </div>
     </header>
 
     <!-- Sobre -->
@@ -28,7 +63,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h2>Sobre Nós</h2>
+                    <h2 class="text-laranja">Sobre Nós</h2>
                     <p>Somos uma comunidade cristã comprometida em viver e compartilhar o amor de Deus. Nossa missão é alcançar vidas, restaurar famílias e formar discípulos que impactem o mundo.</p>
                     <p>Seja bem-vindo para fazer parte dessa família de fé.</p>
                 </div>
@@ -42,7 +77,7 @@
     <!-- Cultos -->
     <section id="cultos" class="py-5 bg-light">
         <div class="container text-center">
-            <h2 class="mb-4">Nossos Cultos</h2>
+            <h2 class="mb-4 text-laranja">Nossos Cultos</h2>
             <div class="row">
                 <div class="col-md-4">
                     <h5>Culto de Celebração</h5>
@@ -63,7 +98,7 @@
     <!-- Contato -->
     <section id="contato" class="py-5">
         <div class="container text-center">
-            <h2>Entre em Contato</h2>
+            <h2 class="text-laranja">Entre em Contato</h2>
             <p>Endereço: Rua Exemplo, 123 - Cidade - Estado</p>
             <p>Telefone: (00) 00000-0000</p>
             <p>Email: contato@plenitude.org</p>
@@ -71,7 +106,7 @@
     </section>
 
     <!-- Rodapé -->
-    <footer class="bg-primary text-white text-center py-3">
+    <footer class="bg-laranja text-white text-center py-3">
         <p class="mb-0">&copy; 2025 - Comunidade Internacional Plenitude. Todos os direitos reservados.</p>
     </footer>
 
