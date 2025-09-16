@@ -1,162 +1,98 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca de Estudos Bíblicos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Comunidade Internacional Plenitude - Um lugar de fé, amor e esperança">
+    <title>Comunidade Internacional Plenitude</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1a202c;
-        }
-        .collapsible-header {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 0.75rem;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .collapsible-header:hover {
-            background-color: #f1f5f9;
-        }
-        .collapsible-content {
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.3s ease-in-out;
-        }
-        .collapsible-content.expanded {
-            max-height: 3000px;
-        }
-        .collapsible-arrow {
-            transition: transform 0.3s ease-in-out;
-        }
-        .collapsible-arrow.rotated {
-            transform: rotate(90deg);
-        }
-        /* Estilos personalizados para o menu hambúrguer para uma transição suave */
-        #mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-        }
-        #mobile-menu.open {
-            max-height: 500px; /* Um valor alto o suficiente para caber o conteúdo */
-        }
-    </style>
-    </head>
-<body class="p-4 sm:p-8 md:p-12">
-    <nav class="bg-white rounded-xl shadow-lg p-4 flex items-center justify-between mb-8 md:mb-12 sticky top-4 z-50">
-        <h1 class="text-2xl md:text-3xl font-bold text-indigo-700">Estudos Bíblicos</h1>
-        
-        <button id="hamburger-btn" class="p-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 md:hidden transition-all duration-300 hover:bg-gray-100">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-
-        <ul id="nav-links" class="hidden md:flex md:items-center space-x-6">
-            <li><a href="#" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Início</a></li>
-            <li><a href="#biblioteca" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Biblioteca</a></li>
-            <li><a href="#secao1" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Introdução</a></li>
-            <li><a href="#secao2" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">O Papel da Mulher</a></li>
-            <li><a href="#secao3" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">A Sabedoria no Lar</a></li>
-            <li><a href="#secao4" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Exemplos Bíblicos</a></li>
-            <li><a href="#secao5" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Aplicação Prática</a></li>
-            <li><a href="#secao6" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200">Conclusão</a></li>
-        </ul>
-    </nav>
-    
-    <ul id="mobile-menu" class="bg-white rounded-xl shadow-lg mb-8 md:hidden flex flex-col items-center">
-        <li><a href="#" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Início</a></li>
-        <li><a href="#biblioteca" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Biblioteca</a></li>
-        <li><a href="#secao1" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Introdução</a></li>
-        <li><a href="#secao2" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">O Papel da Mulher</a></li>
-        <li><a href="#secao3" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">A Sabedoria no Lar</a></li>
-        <li><a href="#secao4" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Exemplos Bíblicos</a></li>
-        <li><a href="#secao5" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center border-b border-gray-100">Aplicação Prática</a></li>
-        <li><a href="#secao6" class="text-gray-600 hover:text-indigo-700 font-medium transition duration-200 block w-full p-4 text-center">Conclusão</a></li>
-    </ul>
-
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-2 leading-tight">Estudo Bíblico: A Mulher e a Sua Casa</h1>
-            <div class="w-24 h-1 mx-auto bg-indigo-500 rounded-full mt-4"></div>
-        </header>
-
-        <p class="text-gray-700 leading-relaxed text-lg mb-8">
-            A Bíblia apresenta a mulher como uma figura essencial para o bem-estar da casa e da família. Sua influência pode edificar ou destruir o lar, e por isso Deus a valoriza como uma auxiliadora, sábia e virtuosa.
-        </p>
-
-        <hr class="my-8 border-gray-200">
-        
-        <div class="mb-10" id="biblioteca">
-            <h2 class="text-3xl font-bold text-gray-800 text-center mb-6">Biblioteca de Estudos</h2>
-            <div class="grid sm:grid-cols-2 gap-6">
-                <a href="#secao1" class="block">
-                    <div class="bg-indigo-50 p-6 rounded-xl border-2 border-indigo-200 shadow-md transition-transform transform hover:scale-105">
-                        <h4 class="text-xl font-bold text-indigo-700 mb-2">A Mulher e a Sua Casa</h4>
-                        <p class="text-gray-700">Um guia bíblico sobre o papel da mulher como edificadora e guardiã do lar.</p>
-                    </div>
-                </a>
-                <a href="#" class="block">
-                    <div class="bg-gray-100 p-6 rounded-xl border-2 border-gray-200 shadow-md transition-transform transform hover:scale-105">
-                        <h4 class="text-xl font-bold text-gray-800 mb-2">A Bússola da Vida Cristã</h4>
-                        <p class="text-gray-600">Alinhe suas prioridades com o coração de Deus para uma vida de propósito.</p>
-                    </div>
-                </a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">C.I. Plenitude</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cultos">Cultos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <hr class="my-8 border-gray-200">
+    <!-- Hero -->
+    <header class="bg-light py-5 text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Bem-vindo à Comunidade Internacional Plenitude</h1>
+            <p class="lead">Um lugar para adorar, aprender e crescer na fé</p>
+            <a href="#cultos" class="btn btn-primary btn-lg">Participe Conosco</a>
+        </div>
+    </header>
 
-        <div class="mb-10" id="secao1">
-            <div class="collapsible-header p-4" data-target="section1-content">
-                <h3 class="text-2xl font-bold text-gray-800">1. Introdução</h3>
-                <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
-            </div>
-            <div id="section1-content" class="collapsible-content mt-4">
-                <p class="text-gray-700 leading-relaxed mb-4">
-                    Deus a valoriza como uma auxiliadora, sábia e virtuosa.
-                </p>
-                <div class="p-4 bg-gray-100 rounded-lg">
-                    <p class="font-semibold text-gray-700">
-                        <strong class="text-indigo-600">Leia:</strong> <a href="https://www.bible.com/pt/bible/162/PRO.14.1" target="_blank" class="text-blue-600 hover:underline">Provérbios 14:1</a>
-                    </p>
-                    <p class="text-gray-700 mt-2">
-                        “A mulher sábia edifica a sua casa, mas a tola a derruba com as próprias mãos.”
-                    </p>
+    <!-- Sobre -->
+    <section id="sobre" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2>Sobre Nós</h2>
+                    <p>Somos uma comunidade cristã comprometida em viver e compartilhar o amor de Deus. Nossa missão é alcançar vidas, restaurar famílias e formar discípulos que impactem o mundo.</p>
+                    <p>Seja bem-vindo para fazer parte dessa família de fé.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://via.placeholder.com/500x300" alt="Igreja" class="img-fluid rounded shadow">
                 </div>
             </div>
         </div>
+    </section>
 
-        <hr class="my-8 border-gray-200">
-
-        <div class="mb-10" id="secao2">
-            <div class="collapsible-header p-4" data-target="section2-content">
-                <h3 class="text-2xl font-bold text-gray-800">2. O Papel da Mulher na Casa</h3>
-                <span class="collapsible-arrow text-3xl text-gray-500 font-light">&gt;</span>
+    <!-- Cultos -->
+    <section id="cultos" class="py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="mb-4">Nossos Cultos</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Culto de Celebração</h5>
+                    <p>Domingos às 19h</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Culto de Ensino</h5>
+                    <p>Quartas às 20h</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Reunião de Oração</h5>
+                    <p>Sábados às 18h</p>
+                </div>
             </div>
-            <div id="section2-content" class="collapsible-content mt-4">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="text-xl font-semibold text-gray-800 mb-2">Edificadora e Guardiã</h4>
-                        <p class="text-gray-700 leading-relaxed mb-2">
-                            A mulher é chamada para edificar, proteger e zelar pelo lar, cultivando um ambiente de paz, amor e temor a Deus.
-                        </p>
-                        <p class="font-semibold text-gray-700">
-                            <strong class="text-indigo-600">Leia:</strong> <a href="https://www.bible.com/pt/bible/162/PRO.31.27" target="_blank" class="text-blue-600 hover:underline">Provérbios 31:27</a>
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="text-xl font-semibold text-gray-800 mb-2">Exemplo de Fé</h4>
-                        <p class="text-gray-700 leading-relaxed mb-2">
-                            Sua vida espiritual influencia marido e filhos. Mesmo em casos onde há incredulidade no lar, sua conduta pode ser instrumento de transformação.
-                        </p>
-                        <p class="font-semibold text-gray-700">
-                            <strong class="text-indigo-600">Leia:</strong> <a href="https://www.bible.com/pt/bible/162/1PE.3.1-2" target="_blank" class="text-blue-600 hover:underline">1 Pedro 3:1-2</a>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section id="contato" class="py-5">
+        <div class="container text-center">
+            <h2>Entre em Contato</h2>
+            <p>Endereço: Rua Exemplo, 123 - Cidade - Estado</p>
+            <p>Telefone: (00) 00000-0000</p>
+            <p>Email: contato@plenitude.org</p>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="bg-primary text-white text-center py-3">
+        <p class="mb-0">&copy; 2025 - Comunidade Internacional Plenitude. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>nk" class="text-blue-600 hover:underline">1 Pedro 3:1-2</a>
                         </p>
                     </div>
                 </div>
