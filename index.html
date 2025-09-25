@@ -29,16 +29,93 @@
         }
     </style>
 
-    <!-- Firebase App (core SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <!-- Firebase Analytics (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-    <!-- Firebase Auth (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- Firebase Storage -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+                <script type="module">
+                    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+                    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+                    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+                    import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-storage.js";
+
+                    // Configuração do Firebase
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyAxuEEDjn6lPfKOysOcQjvWvUWqJL_990o",
+                        authDomain: "c-i-plenitude.firebaseapp.com",
+                        projectId: "c-i-plenitude",
+                        storageBucket: "c-i-plenitude.appspot.com",
+                        messagingSenderId: "126733729315",
+                        appId: "1:126733729315:web:f6735a7904509d270fbb96",
+                        measurementId: "G-K6RHVQ3YLP"
+                    };
+
+                    // Inicializa Firebase
+                    const app = initializeApp(firebaseConfig);
+                    const analytics = getAnalytics(app);
+                    const db = getFirestore(app);
+                    const storage = getStorage(app);
+
+                    // Tratamento de erros globais
+                    window.addEventListener('error', function(event) {
+                        const globalError = document.getElementById('global-error');
+                        if (globalError) {
+                            globalError.textContent = 'Erro inesperado: ' + event.message;
+                            globalError.style.display = 'block';
+                            setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                        }
+                    });
+                    window.addEventListener('unhandledrejection', function(event) {
+                        const globalError = document.getElementById('global-error');
+                        if (globalError) {
+                            globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
+                            globalError.style.display = 'block';
+                            setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                        }
+                    });
+
+                    // Carregar dados dinâmicos do site
+                    document.addEventListener('DOMContentLoaded', async function() {
+                        // Sobre, cultos, contato, projetos
+                        const docRef = doc(db, 'site', 'conteudo');
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            // Sobre
+                            document.getElementById('sobre-dinamico').innerHTML = `<p>${(data.sobre||'').replace(/\n/g,'<br>')}</p>`;
+                            // Cultos (novo formato dinâmico)
+                            let cultosHtml = '';
+                            if (Array.isArray(data.cultos) && data.cultos.length) {
+                                data.cultos.forEach((culto, idx) => {
+                                    cultosHtml += `<div class='col-md-4 mb-3'><h5>${culto.nome||'Culto'}</h5><p>${culto.dia.toString().padStart(2,'0')}/${culto.mes.toString().padStart(2,'0')}/${culto.ano} às ${culto.hora}</p></div>`;
+                                });
+                            }
+                            document.getElementById('cultos-dinamico').innerHTML = cultosHtml || '<div class="col-12">Nenhum culto cadastrado.</div>';
+                            // Contato
+                            document.getElementById('contato-dinamico').innerHTML =
+                                `<p>Endereço: ${data.endereco||''}</p>`+
+                                `<p>Telefone: <a href="tel:${(data.telefone||'').replace(/\D/g,'')}">${data.telefone||''}</a></p>`+
+                                `<p>Email: <a href="mailto:${data.email||''}">${data.email||''}</a></p>`;
+                            // Projetos
+                            const listaProjetos = document.getElementById('lista-projetos');
+                            listaProjetos.innerHTML = '';
+                            if (data.projetos && data.projetos.length) {
+                                data.projetos.forEach(proj => {
+                                    const li = document.createElement('li');
+                                    li.textContent = proj;
+                                    listaProjetos.appendChild(li);
+                                });
+                            } else {
+                                listaProjetos.innerHTML = '<li>Em breve</li>';
+                            }
+                        }
+                        // Imagem destaque
+                        try {
+                            const url = await getDownloadURL(storageRef(storage, 'destaque.jpg'));
+                            const img = document.getElementById('imagem-destaque');
+                            img.src = url;
+                            img.style.display = 'block';
+                        } catch {
+                            document.getElementById('imagem-destaque').style.display = 'none';
+                        }
+                    });
+                </script>
 </head>
 <body>
 
@@ -146,82 +223,5 @@
             }
         </style>
 
-        <script>
-            // Tratamento de erros globais
-            window.addEventListener('error', function(event) {
-                const globalError = document.getElementById('global-error');
-                if (globalError) {
-                    globalError.textContent = 'Erro inesperado: ' + event.message;
-                    globalError.style.display = 'block';
-                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                }
-            });
-            window.addEventListener('unhandledrejection', function(event) {
-                const globalError = document.getElementById('global-error');
-                if (globalError) {
-                    globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
-                    globalError.style.display = 'block';
-                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                }
-            });
-
-            // Firebase config (igual ao admin)
-            const firebaseConfig = {
-                apiKey: "AIzaSyAxuEEDjn6lPfKOysOcQjvWvUWqJL_990o",
-                authDomain: "c-i-plenitude.firebaseapp.com",
-                projectId: "c-i-plenitude",
-                storageBucket: "c-i-plenitude.appspot.com",
-                messagingSenderId: "126733729315",
-                appId: "1:126733729315:web:f6735a7904509d270fbb96",
-                measurementId: "G-K6RHVQ3YLP"
-            };
-            firebase.initializeApp(firebaseConfig);
-            // Firestore e Storage
-            const db = firebase.firestore();
-            const storage = firebase.storage();
-
-            // Carregar dados dinâmicos do site
-            document.addEventListener('DOMContentLoaded', function() {
-                // Sobre
-                db.collection('site').doc('conteudo').get().then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        // Sobre
-                        document.getElementById('sobre-dinamico').innerHTML = `<p>${(data.sobre||'').replace(/\n/g,'<br>')}</p>`;
-                        // Cultos
-                        let cultosHtml = '';
-                        if (data.culto1) cultosHtml += `<div class='col-md-4'><h5>Culto 1</h5><p>${data.culto1}</p></div>`;
-                        if (data.culto2) cultosHtml += `<div class='col-md-4'><h5>Culto 2</h5><p>${data.culto2}</p></div>`;
-                        if (data.culto3) cultosHtml += `<div class='col-md-4'><h5>Culto 3</h5><p>${data.culto3}</p></div>`;
-                        document.getElementById('cultos-dinamico').innerHTML = cultosHtml || '<div class="col-12">Nenhum culto cadastrado.</div>';
-                        // Contato
-                        document.getElementById('contato-dinamico').innerHTML =
-                            `<p>Endereço: ${data.endereco||''}</p>`+
-                            `<p>Telefone: <a href="tel:${(data.telefone||'').replace(/\D/g,'')}">${data.telefone||''}</a></p>`+
-                            `<p>Email: <a href="mailto:${data.email||''}">${data.email||''}</a></p>`;
-                        // Projetos
-                        const listaProjetos = document.getElementById('lista-projetos');
-                        listaProjetos.innerHTML = '';
-                        if (data.projetos && data.projetos.length) {
-                            data.projetos.forEach(proj => {
-                                const li = document.createElement('li');
-                                li.textContent = proj;
-                                listaProjetos.appendChild(li);
-                            });
-                        } else {
-                            listaProjetos.innerHTML = '<li>Em breve</li>';
-                        }
-                    }
-                });
-                // Imagem destaque
-                storage.ref('destaque.jpg').getDownloadURL().then(url => {
-                    const img = document.getElementById('imagem-destaque');
-                    img.src = url;
-                    img.style.display = 'block';
-                }).catch(()=>{
-                    document.getElementById('imagem-destaque').style.display = 'none';
-                });
-            });
-        </script>
 </body>
 </html>
