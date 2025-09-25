@@ -40,6 +40,9 @@
 </head>
 <body>
 
+    <!-- Alerta de erro global -->
+    <div id="global-error" class="alert alert-danger text-center" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:9999; max-width:90vw;"></div>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-laranja">
         <div class="container">
@@ -134,5 +137,25 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            // Tratamento de erros globais
+            window.addEventListener('error', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + event.message;
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+            window.addEventListener('unhandledrejection', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+        </script>
 </body>
 </html>

@@ -49,6 +49,8 @@
         </script>
 </head>
 <body>
+    <!-- Alerta de erro global -->
+    <div id="global-error" class="alert alert-danger text-center" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:9999; max-width:90vw;"></div>
             <!-- Cabeçalho -->
             <header class="w-100 py-3 bg-laranja text-white text-center shadow-sm" style="position:fixed;top:0;left:0;z-index:10;">
                 <span class="fw-bold fs-4">Administração - C.I. Plenitude</span>
@@ -120,6 +122,23 @@
     </div>
             // Autenticação Firebase - Login simples por email/senha
             document.addEventListener('DOMContentLoaded', function() {
+                // Tratamento de erros globais
+                window.addEventListener('error', function(event) {
+                    const globalError = document.getElementById('global-error');
+                    if (globalError) {
+                        globalError.textContent = 'Erro inesperado: ' + event.message;
+                        globalError.style.display = 'block';
+                        setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                    }
+                });
+                window.addEventListener('unhandledrejection', function(event) {
+                    const globalError = document.getElementById('global-error');
+                    if (globalError) {
+                        globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
+                        globalError.style.display = 'block';
+                        setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                    }
+                });
                 const loginForm = document.getElementById('login-form');
                 const loginContainer = document.getElementById('login-container');
                 const adminPanel = document.getElementById('admin-panel');
