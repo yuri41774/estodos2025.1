@@ -37,17 +37,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <!-- Firebase Firestore (opcional) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 
     <!-- Alerta de erro global -->
     <div id="global-error" class="alert alert-danger text-center" style="display:none; position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:9999; max-width:90vw;"></div>
 
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="visually-hidden-focusable skip-link bg-laranja text-white p-2 position-absolute top-0 start-0" tabindex="0">Pular para o conteúdo principal</a>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-laranja">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-laranja" role="navigation" aria-label="Menu principal">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">C.I. Plenitude</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Menu">
+            <a class="navbar-brand fw-bold" href="#" aria-label="Página inicial da Comunidade Internacional Plenitude">C.I. Plenitude</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menu de navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="menu">
@@ -57,86 +61,90 @@
                     <li class="nav-item"><a class="nav-link" href="#cultos">Cultos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
                 </ul>
-                <a href="login.html" class="btn btn-laranja ms-lg-3 mt-2 mt-lg-0" role="button">Colaborador</a>
+                <a href="login.html" class="btn btn-laranja ms-lg-3 mt-2 mt-lg-0" role="button" aria-label="Área do colaborador">Colaborador</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero -->
-    <header class="bg-light py-5 text-center">
+    <header class="bg-light py-5 text-center" role="banner">
         <div class="container">
             <h1 class="display-4 fw-bold text-laranja">Bem-vindo à Comunidade Internacional Plenitude</h1>
             <p class="lead">Um lugar para adorar, aprender e crescer na fé</p>
-            <a href="#cultos" class="btn btn-laranja btn-lg">Participe Conosco</a>
+            <a href="#cultos" class="btn btn-laranja btn-lg" aria-label="Ir para a seção de cultos">Participe Conosco</a>
         </div>
     </header>
 
     <!-- Sobre -->
-    <section id="sobre" class="py-5">
+    <section id="sobre" class="py-5" aria-labelledby="titulo-sobre">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h2 class="text-laranja">Sobre Nós</h2>
-                    <p>Somos uma comunidade cristã comprometida em viver e compartilhar o amor de Deus. Nossa missão é alcançar vidas, restaurar famílias e formar discípulos que impactem o mundo.</p>
-                    <p>Seja bem-vindo para fazer parte dessa família de fé.</p>
+                    <h2 class="text-laranja" id="titulo-sobre">Sobre Nós</h2>
+                    <div id="sobre-dinamico">
+                        <p>Carregando...</p>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <img src="Imagem CIP 2025-09-25 à(s) 14.46.26_28b08d2a.jpg" alt="Igreja" class="img-fluid rounded shadow">
+                    <img id="imagem-destaque" src="" alt="Fachada da igreja da Comunidade Internacional Plenitude, vista externa, com pessoas reunidas" class="img-fluid rounded shadow" tabindex="0" style="display:none;">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Cultos -->
-    <section id="cultos" class="py-5 bg-light">
+    <section id="cultos" class="py-5 bg-light" aria-labelledby="titulo-cultos">
         <div class="container text-center">
-            <h2 class="mb-4 text-laranja">Nossos Cultos</h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Culto de Celebração</h5>
-                    <p>Domingos às 19h</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Culto de Ensino</h5>
-                    <p>Quartas às 20h</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Reunião de Oração</h5>
-                    <p>Sábados às 18h</p>
-                </div>
+            <h2 class="mb-4 text-laranja" id="titulo-cultos">Nossos Cultos</h2>
+            <div class="row" id="cultos-dinamico">
+                <div class="col-12">Carregando...</div>
             </div>
         </div>
     </section>
 
     <!-- Projetos -->
-    <section id="projetos" class="py-5">
+    <section id="projetos" class="py-5" aria-labelledby="titulo-projetos">
         <div class="container">
-            <h2 class="text-laranja text-center mb-4">Nossos Projetos</h2>
+            <h2 class="text-laranja text-center mb-4" id="titulo-projetos">Nossos Projetos</h2>
             <div class="row">
                 <div class="col-12 text-center">
-                    <p class="lead">Em breve</p>
+                    <ul id="lista-projetos" class="list-unstyled"></ul>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contato -->
-    <section id="contato" class="py-5">
+    <section id="contato" class="py-5" aria-labelledby="titulo-contato">
         <div class="container text-center">
-            <h2 class="text-laranja">Entre em Contato</h2>
-            <p>Endereço: Estrada Adhemar Bebiano 3006, Inhaúma (antigo asilo/casarão da cultura) - Rio de Janeiro - RJ</p>
-            <p>Telefone: (21) 9 8544-4844</p>
-            <p>Email: comunidadeinterplenitude@gmail.com</p>
+            <h2 class="text-laranja" id="titulo-contato">Entre em Contato</h2>
+            <address id="contato-dinamico">
+                <p>Carregando...</p>
+            </address>
         </div>
     </section>
 
     <!-- Rodapé -->
-    <footer class="bg-laranja text-white text-center py-3">
+    <footer class="bg-laranja text-white text-center py-3" role="contentinfo">
         <p class="mb-0">&copy; 2025 - Comunidade Internacional Plenitude. Todos os direitos reservados.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            .skip-link {
+                left: 8px;
+                top: 8px;
+                z-index: 10000;
+                position: absolute;
+                border-radius: 4px;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .skip-link:focus {
+                opacity: 1;
+            }
+        </style>
 
         <script>
             // Tratamento de erros globais
@@ -155,6 +163,64 @@
                     globalError.style.display = 'block';
                     setTimeout(() => { globalError.style.display = 'none'; }, 8000);
                 }
+            });
+
+            // Firebase config (igual ao admin)
+            const firebaseConfig = {
+                apiKey: "AIzaSyAxuEEDjn6lPfKOysOcQjvWvUWqJL_990o",
+                authDomain: "c-i-plenitude.firebaseapp.com",
+                projectId: "c-i-plenitude",
+                storageBucket: "c-i-plenitude.firebasestorage.app",
+                messagingSenderId: "126733729315",
+                appId: "1:126733729315:web:f6735a7904509d270fbb96",
+                measurementId: "G-K6RHVQ3YLP"
+            };
+            firebase.initializeApp(firebaseConfig);
+            // Firestore e Storage
+            const db = firebase.firestore();
+            const storage = firebase.storage();
+
+            // Carregar dados dinâmicos do site
+            document.addEventListener('DOMContentLoaded', function() {
+                // Sobre
+                db.collection('site').doc('conteudo').get().then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Sobre
+                        document.getElementById('sobre-dinamico').innerHTML = `<p>${(data.sobre||'').replace(/\n/g,'<br>')}</p>`;
+                        // Cultos
+                        let cultosHtml = '';
+                        if (data.culto1) cultosHtml += `<div class='col-md-4'><h5>Culto 1</h5><p>${data.culto1}</p></div>`;
+                        if (data.culto2) cultosHtml += `<div class='col-md-4'><h5>Culto 2</h5><p>${data.culto2}</p></div>`;
+                        if (data.culto3) cultosHtml += `<div class='col-md-4'><h5>Culto 3</h5><p>${data.culto3}</p></div>`;
+                        document.getElementById('cultos-dinamico').innerHTML = cultosHtml || '<div class="col-12">Nenhum culto cadastrado.</div>';
+                        // Contato
+                        document.getElementById('contato-dinamico').innerHTML =
+                            `<p>Endereço: ${data.endereco||''}</p>`+
+                            `<p>Telefone: <a href="tel:${(data.telefone||'').replace(/\D/g,'')}">${data.telefone||''}</a></p>`+
+                            `<p>Email: <a href="mailto:${data.email||''}">${data.email||''}</a></p>`;
+                        // Projetos
+                        const listaProjetos = document.getElementById('lista-projetos');
+                        listaProjetos.innerHTML = '';
+                        if (data.projetos && data.projetos.length) {
+                            data.projetos.forEach(proj => {
+                                const li = document.createElement('li');
+                                li.textContent = proj;
+                                listaProjetos.appendChild(li);
+                            });
+                        } else {
+                            listaProjetos.innerHTML = '<li>Em breve</li>';
+                        }
+                    }
+                });
+                // Imagem destaque
+                storage.ref('destaque.jpg').getDownloadURL().then(url => {
+                    const img = document.getElementById('imagem-destaque');
+                    img.src = url;
+                    img.style.display = 'block';
+                }).catch(()=>{
+                    document.getElementById('imagem-destaque').style.display = 'none';
+                });
             });
         </script>
 </body>
