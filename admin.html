@@ -65,14 +65,37 @@
                 <button type="submit" class="btn btn-laranja">Salvar Sobre</button>
                 <span id="sobre-status" class="ms-2" aria-live="polite"></span>
             </form>
-            <form id="form-cultos" class="mb-4" autocomplete="off">
-                <h3 class="fs-5">Cultos</h3>
-                <input id="culto1" class="form-control mb-2" placeholder="Culto 1" required>
-                <input id="culto2" class="form-control mb-2" placeholder="Culto 2" required>
-                <input id="culto3" class="form-control mb-2" placeholder="Culto 3" required>
-                <button type="submit" class="btn btn-laranja">Salvar Cultos</button>
-                <span id="cultos-status" class="ms-2" aria-live="polite"></span>
-            </form>
+                        <form id="form-cultos" class="mb-4" autocomplete="off">
+                                <h3 class="fs-5">Cultos</h3>
+                                <div class="row g-2 align-items-end mb-2">
+                                    <div class="col-md-3">
+                                        <label for="culto-nome" class="form-label">Nome do Culto</label>
+                                        <input id="culto-nome" class="form-control" placeholder="Ex: Celebração" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="culto-dia" class="form-label">Dia</label>
+                                        <input id="culto-dia" type="number" min="1" max="31" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="culto-mes" class="form-label">Mês</label>
+                                        <input id="culto-mes" type="number" min="1" max="12" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="culto-ano" class="form-label">Ano</label>
+                                        <input id="culto-ano" type="number" min="2023" max="2100" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="culto-hora" class="form-label">Hora</label>
+                                        <input id="culto-hora" type="time" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" id="add-culto" class="btn btn-success w-100">+</button>
+                                    </div>
+                                </div>
+                                <ul id="lista-cultos" class="list-group mb-2"></ul>
+                                <button type="submit" class="btn btn-laranja">Salvar Cultos</button>
+                                <span id="cultos-status" class="ms-2" aria-live="polite"></span>
+                        </form>
             <form id="form-contato" class="mb-4" autocomplete="off">
                 <h3 class="fs-5">Contato</h3>
                 <input id="contato-endereco" class="form-control mb-2" placeholder="Endereço" required>
@@ -180,10 +203,15 @@
             const sobreTexto = document.getElementById('sobre-texto');
             const sobreStatus = document.getElementById('sobre-status');
             const formCultos = document.getElementById('form-cultos');
-            const culto1 = document.getElementById('culto1');
-            const culto2 = document.getElementById('culto2');
-            const culto3 = document.getElementById('culto3');
+            const cultoNome = document.getElementById('culto-nome');
+            const cultoDia = document.getElementById('culto-dia');
+            const cultoMes = document.getElementById('culto-mes');
+            const cultoAno = document.getElementById('culto-ano');
+            const cultoHora = document.getElementById('culto-hora');
+            const addCulto = document.getElementById('add-culto');
+            const listaCultos = document.getElementById('lista-cultos');
             const cultosStatus = document.getElementById('cultos-status');
+            let cultos = [];
             const formContato = document.getElementById('form-contato');
             const contatoEndereco = document.getElementById('contato-endereco');
             const contatoTelefone = document.getElementById('contato-telefone');
@@ -262,9 +290,8 @@
                     if (doc.exists) {
                         const data = doc.data();
                         sobreTexto.value = data.sobre || '';
-                        culto1.value = data.culto1 || '';
-                        culto2.value = data.culto2 || '';
-                        culto3.value = data.culto3 || '';
+                        cultos = data.cultos || [];
+                        renderizarCultos();
                         contatoEndereco.value = data.endereco || '';
                         contatoTelefone.value = data.telefone || '';
                         contatoEmail.value = data.email || '';
@@ -299,16 +326,51 @@
                         .catch(()=>{ sobreStatus.textContent = 'Erro ao salvar.'; });
                 });
             }
-            // Salvar Cultos
+            // Cultos dinâmicos
+            function renderizarCultos() {
+                listaCultos.innerHTML = '';
+                cultos.forEach((c, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<span>${c.nome} - ${c.dia}/${c.mes}/${c.ano} às ${c.hora}</span>`;
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-sm btn-danger';
+                    btn.textContent = 'Remover';
+                    btn.onclick = () => { cultos.splice(idx,1); renderizarCultos(); };
+                    li.appendChild(btn);
+                    listaCultos.appendChild(li);
+                });
+            }
+            if (addCulto) {
+                addCulto.addEventListener('click', function() {
+                    if (!cultoNome.value.trim() || !cultoDia.value || !cultoMes.value || !cultoAno.value || !cultoHora.value) {
+                        cultosStatus.textContent = 'Preencha todos os campos.';
+                        return;
+                    }
+                    cultos.push({
+                        nome: cultoNome.value.trim(),
+                        dia: cultoDia.value,
+                        mes: cultoMes.value,
+                        ano: cultoAno.value,
+                        hora: cultoHora.value
+                    });
+                    renderizarCultos();
+                    cultoNome.value = '';
+                    cultoDia.value = '';
+                    cultoMes.value = '';
+                    cultoAno.value = '';
+                    cultoHora.value = '';
+                    cultosStatus.textContent = '';
+                });
+            }
             if (formCultos) {
                 formCultos.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    if (!culto1.value.trim() || !culto2.value.trim() || !culto3.value.trim()) {
-                        cultosStatus.textContent = 'Preencha todos os campos de cultos.';
-                        (culto1.value.trim() ? (culto2.value.trim() ? culto3 : culto2) : culto1).focus();
+                    if (!cultos.length) {
+                        cultosStatus.textContent = 'Adicione pelo menos um culto.';
                         return;
                     }
-                    db.collection('site').doc('conteudo').set({ culto1: culto1.value, culto2: culto2.value, culto3: culto3.value }, { merge: true })
+                    db.collection('site').doc('conteudo').set({ cultos }, { merge: true })
                         .then(() => { cultosStatus.textContent = 'Salvo!'; setTimeout(()=>cultosStatus.textContent='',2000); })
                         .catch(()=>{ cultosStatus.textContent = 'Erro ao salvar.'; });
                 });
