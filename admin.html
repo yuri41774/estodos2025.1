@@ -45,26 +45,23 @@
         </script>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-laranja mb-4">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">Administração - C.I. Plenitude</span>
+        <div class="d-flex align-items-center justify-content-center min-vh-100" id="login-container">
+            <div class="card shadow p-4" style="max-width: 350px; width: 100%; border: none;">
+                <div class="text-center mb-3">
+                    <span class="fw-bold fs-4 text-laranja">Administração</span>
+                </div>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="login-email" placeholder="E-mail" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="login-password" placeholder="Senha" required>
+                    </div>
+                    <button type="submit" class="btn btn-laranja w-100">Entrar</button>
+                    <div id="login-error" class="text-danger mt-2 text-center" style="display:none;"></div>
+                </form>
+            </div>
         </div>
-    </nav>
-    <div class="container" id="login-container">
-        <h2 class="text-laranja mb-4">Login do Administrador</h2>
-        <form id="login-form">
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" id="login-email" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Senha</label>
-                <input type="password" class="form-control" id="login-password" required>
-            </div>
-            <button type="submit" class="btn btn-laranja">Entrar</button>
-            <div id="login-error" class="text-danger mt-2" style="display:none;"></div>
-        </form>
-    </div>
     <div class="container" id="admin-panel" style="display:none;">
         <h2 class="text-laranja mb-4">Gerenciar Conteúdo do Site</h2>
         <form>
