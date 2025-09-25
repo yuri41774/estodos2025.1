@@ -120,25 +120,26 @@
         </div>
         <button id="logout-btn" class="btn btn-secondary mt-3">Sair</button>
     </div>
-            // Autenticação Firebase - Login simples por email/senha
+        <script>
+            // Tratamento de erros globais
+            window.addEventListener('error', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + event.message;
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+            window.addEventListener('unhandledrejection', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+
             document.addEventListener('DOMContentLoaded', function() {
-                // Tratamento de erros globais
-                window.addEventListener('error', function(event) {
-                    const globalError = document.getElementById('global-error');
-                    if (globalError) {
-                        globalError.textContent = 'Erro inesperado: ' + event.message;
-                        globalError.style.display = 'block';
-                        setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                    }
-                });
-                window.addEventListener('unhandledrejection', function(event) {
-                    const globalError = document.getElementById('global-error');
-                    if (globalError) {
-                        globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
-                        globalError.style.display = 'block';
-                        setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                    }
-                });
                 const loginForm = document.getElementById('login-form');
                 const loginContainer = document.getElementById('login-container');
                 const adminPanel = document.getElementById('admin-panel');
@@ -148,11 +149,11 @@
                 // Verifica se já está logado
                 firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
-                        loginContainer.style.display = 'none';
-                        adminPanel.style.display = 'block';
+                        if (loginContainer) loginContainer.style.display = 'none';
+                        if (adminPanel) adminPanel.style.display = 'block';
                     } else {
-                        loginContainer.style.display = 'block';
-                        adminPanel.style.display = 'none';
+                        if (loginContainer) loginContainer.style.display = 'flex';
+                        if (adminPanel) adminPanel.style.display = 'none';
                     }
                 });
 
@@ -178,5 +179,6 @@
                     });
                 }
             });
+        </script>
 </body>
 </html>
