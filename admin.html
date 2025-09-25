@@ -49,23 +49,33 @@
         </script>
 </head>
 <body>
-        <div class="d-flex align-items-center justify-content-center min-vh-100" id="login-container">
-            <div class="card shadow p-4" style="max-width: 350px; width: 100%; border: none;">
-                <div class="text-center mb-3">
-                    <span class="fw-bold fs-4 text-laranja">Administração</span>
+            <!-- Cabeçalho -->
+            <header class="w-100 py-3 bg-laranja text-white text-center shadow-sm" style="position:fixed;top:0;left:0;z-index:10;">
+                <span class="fw-bold fs-4">Administração - C.I. Plenitude</span>
+            </header>
+
+            <div class="d-flex align-items-center justify-content-center min-vh-100" id="login-container" style="padding-top:60px;padding-bottom:60px;">
+                <div class="card shadow p-4" style="max-width: 350px; width: 100%; border: none; background: rgba(255,255,255,0.95);">
+                    <div class="text-center mb-3">
+                        <span class="fw-bold fs-4 text-laranja">Login</span>
+                    </div>
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="login-email" placeholder="E-mail" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="login-password" placeholder="Senha" required>
+                        </div>
+                        <button type="submit" class="btn btn-laranja w-100">Entrar</button>
+                        <div id="login-error" class="text-danger mt-2 text-center" style="display:none;"></div>
+                    </form>
                 </div>
-                <form id="login-form">
-                    <div class="mb-3">
-                        <input type="email" class="form-control" id="login-email" placeholder="E-mail" required autofocus>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="login-password" placeholder="Senha" required>
-                    </div>
-                    <button type="submit" class="btn btn-laranja w-100">Entrar</button>
-                    <div id="login-error" class="text-danger mt-2 text-center" style="display:none;"></div>
-                </form>
             </div>
-        </div>
+
+            <!-- Rodapé -->
+            <footer class="w-100 py-2 bg-laranja text-white text-center shadow-sm" style="position:fixed;bottom:0;left:0;z-index:10;">
+                <small>&copy; 2025 - Comunidade Internacional Plenitude</small>
+            </footer>
     <div class="container" id="admin-panel" style="display:none;">
         <h2 class="text-laranja mb-4">Gerenciar Conteúdo do Site</h2>
         <form>
