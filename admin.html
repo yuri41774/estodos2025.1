@@ -21,19 +21,13 @@
         }
     </style>
 
-    <!-- Firebase App (core SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <!-- Firebase Analytics (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-    <!-- Firebase Auth (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore (opcional) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <!-- Firebase Storage -->
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+            import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+            import { getStorage, ref as storageRef, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-storage.js";
 
-        <script>
-            // Configuração do Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyAxuEEDjn6lPfKOysOcQjvWvUWqJL_990o",
                 authDomain: "c-i-plenitude.firebaseapp.com",
@@ -43,11 +37,294 @@
                 appId: "1:126733729315:web:f6735a7904509d270fbb96",
                 measurementId: "G-K6RHVQ3YLP"
             };
-            // Inicializa o Firebase
-            firebase.initializeApp(firebaseConfig);
-            if (firebase.analytics) {
-                firebase.analytics();
-            }
+
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const storage = getStorage(app);
+
+            // Tratamento de erros globais
+            window.addEventListener('error', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + event.message;
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+            window.addEventListener('unhandledrejection', function(event) {
+                const globalError = document.getElementById('global-error');
+                if (globalError) {
+                    globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
+                    globalError.style.display = 'block';
+                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const carregando = document.getElementById('carregando');
+                const adminPanel = document.getElementById('admin-panel');
+                const loginSection = document.getElementById('login-section');
+                const loginForm = document.getElementById('login-form');
+                const loginError = document.getElementById('login-error');
+                const logoutBtn = document.getElementById('logout-btn');
+                // Formulários do painel
+                const formSobre = document.getElementById('form-sobre');
+                const sobreTexto = document.getElementById('sobre-texto');
+                const sobreStatus = document.getElementById('sobre-status');
+                const formCultos = document.getElementById('form-cultos');
+                const cultoNome = document.getElementById('culto-nome');
+                const cultoDia = document.getElementById('culto-dia');
+                const cultoMes = document.getElementById('culto-mes');
+                const cultoAno = document.getElementById('culto-ano');
+                const cultoHora = document.getElementById('culto-hora');
+                const addCulto = document.getElementById('add-culto');
+                const listaCultos = document.getElementById('lista-cultos');
+                const cultosStatus = document.getElementById('cultos-status');
+                let cultos = [];
+                const formContato = document.getElementById('form-contato');
+                const contatoEndereco = document.getElementById('contato-endereco');
+                const contatoTelefone = document.getElementById('contato-telefone');
+                const contatoEmail = document.getElementById('contato-email');
+                const contatoStatus = document.getElementById('contato-status');
+                const formProjetos = document.getElementById('form-projetos');
+                const novoProjeto = document.getElementById('novo-projeto');
+                const addProjeto = document.getElementById('add-projeto');
+                const listaProjetos = document.getElementById('lista-projetos');
+                const projetosStatus = document.getElementById('projetos-status');
+                const formImagem = document.getElementById('form-imagem');
+                const imagemDestaque = document.getElementById('imagem-destaque');
+                const previewImagem = document.getElementById('preview-imagem');
+                const uploadImagem = document.getElementById('upload-imagem');
+                const imagemStatus = document.getElementById('imagem-status');
+                const progressBar = document.getElementById('upload-progress-bar');
+                const progress = document.getElementById('upload-progress');
+                let projetos = [];
+
+                // Alterna exibição conforme autenticação
+                onAuthStateChanged(auth, function(user) {
+                    if (user) {
+                        if (adminPanel) adminPanel.style.display = 'block';
+                        if (loginSection) loginSection.style.display = 'none';
+                        carregarDadosPainel();
+                    } else {
+                        if (adminPanel) adminPanel.style.display = 'none';
+                        if (loginSection) loginSection.style.display = 'block';
+                    }
+                });
+                if (loginForm) {
+                  loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    if (!email || !password) {
+                        loginError.textContent = 'Preencha todos os campos.';
+                        loginError.style.display = 'block';
+                        loginForm.querySelector('input:invalid')?.focus();
+                        return;
+                    }
+                    signInWithEmailAndPassword(auth, email, password)
+                      .then(() => {
+                        loginError.style.display = 'none';
+                      })
+                      .catch((error) => {
+                        let msg = 'Usuário ou senha inválidos.';
+                        if (error.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
+                        else if (error.code === 'auth/wrong-password') msg = 'Senha incorreta.';
+                        else if (error.code === 'auth/invalid-email') msg = 'E-mail inválido.';
+                        else if (error.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente novamente mais tarde.';
+                        loginError.textContent = msg;
+                        loginError.style.display = 'block';
+                        loginForm.querySelector('input')?.focus();
+                      });
+                  });
+                }
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', function() {
+                        if (confirm('Deseja realmente sair do painel?')) {
+                            signOut(auth);
+                        }
+                    });
+                }
+
+                // Firestore
+                // Storage
+
+                // Carregar dados do painel
+                async function carregarDadosPainel() {
+                    carregando.style.display = 'inline-block';
+                    // Sobre, cultos, contato, projetos
+                    const docRef = doc(db, 'site', 'conteudo');
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        sobreTexto.value = data.sobre || '';
+                        cultos = data.cultos || [];
+                        renderizarCultos();
+                        contatoEndereco.value = data.endereco || '';
+                        contatoTelefone.value = data.telefone || '';
+                        contatoEmail.value = data.email || '';
+                        projetos = data.projetos || [];
+                        renderizarProjetos();
+                    }
+                    carregando.style.display = 'none';
+                    // Imagem destaque
+                    try {
+                        const url = await getDownloadURL(storageRef(storage, 'destaque.jpg'));
+                        previewImagem.src = url;
+                        previewImagem.style.display = 'block';
+                    } catch {
+                        previewImagem.style.display = 'none';
+                    }
+                }
+
+                // Salvar Sobre
+                if (formSobre) {
+                    formSobre.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        if (!sobreTexto.value.trim()) {
+                            sobreStatus.textContent = 'Preencha o campo Sobre.';
+                            sobreTexto.focus();
+                            return;
+                        }
+                        await setDoc(doc(db, 'site', 'conteudo'), { sobre: sobreTexto.value }, { merge: true })
+                            .then(() => { sobreStatus.textContent = 'Salvo!'; setTimeout(()=>sobreStatus.textContent='',2000); })
+                            .catch(()=>{ sobreStatus.textContent = 'Erro ao salvar.'; });
+                    });
+                }
+                // Cultos dinâmicos
+                function renderizarCultos() {
+                    listaCultos.innerHTML = '';
+                    cultos.forEach((c, idx) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `<span>${c.nome} - ${c.dia}/${c.mes}/${c.ano} às ${c.hora}</span>`;
+                        const btn = document.createElement('button');
+                        btn.className = 'btn btn-sm btn-danger';
+                        btn.textContent = 'Remover';
+                        btn.onclick = () => { cultos.splice(idx,1); renderizarCultos(); };
+                        li.appendChild(btn);
+                        listaCultos.appendChild(li);
+                    });
+                }
+                if (addCulto) {
+                    addCulto.addEventListener('click', function() {
+                        if (!cultoNome.value.trim() || !cultoDia.value || !cultoMes.value || !cultoAno.value || !cultoHora.value) {
+                            cultosStatus.textContent = 'Preencha todos os campos.';
+                            return;
+                        }
+                        cultos.push({
+                            nome: cultoNome.value.trim(),
+                            dia: cultoDia.value,
+                            mes: cultoMes.value,
+                            ano: cultoAno.value,
+                            hora: cultoHora.value
+                        });
+                        renderizarCultos();
+                        cultoNome.value = '';
+                        cultoDia.value = '';
+                        cultoMes.value = '';
+                        cultoAno.value = '';
+                        cultoHora.value = '';
+                        cultosStatus.textContent = '';
+                    });
+                }
+                if (formCultos) {
+                    formCultos.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        if (!cultos.length) {
+                            cultosStatus.textContent = 'Adicione pelo menos um culto.';
+                            return;
+                        }
+                        await setDoc(doc(db, 'site', 'conteudo'), { cultos }, { merge: true })
+                            .then(() => { cultosStatus.textContent = 'Salvo!'; setTimeout(()=>cultosStatus.textContent='',2000); })
+                            .catch(()=>{ cultosStatus.textContent = 'Erro ao salvar.'; });
+                    });
+                }
+                // Salvar Contato
+                if (formContato) {
+                    formContato.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        if (!contatoEndereco.value.trim() || !contatoTelefone.value.trim() || !contatoEmail.value.trim()) {
+                            contatoStatus.textContent = 'Preencha todos os campos de contato.';
+                            (contatoEndereco.value.trim() ? (contatoTelefone.value.trim() ? contatoEmail : contatoTelefone) : contatoEndereco).focus();
+                            return;
+                        }
+                        await setDoc(doc(db, 'site', 'conteudo'), { endereco: contatoEndereco.value, telefone: contatoTelefone.value, email: contatoEmail.value }, { merge: true })
+                            .then(() => { contatoStatus.textContent = 'Salvo!'; setTimeout(()=>contatoStatus.textContent='',2000); })
+                            .catch(()=>{ contatoStatus.textContent = 'Erro ao salvar.'; });
+                    });
+                }
+                // Projetos
+                function renderizarProjetos() {
+                    listaProjetos.innerHTML = '';
+                    projetos.forEach((proj, idx) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.textContent = proj;
+                        const btn = document.createElement('button');
+                        btn.className = 'btn btn-sm btn-danger';
+                        btn.textContent = 'Remover';
+                        btn.onclick = () => { projetos.splice(idx,1); renderizarProjetos(); };
+                        li.appendChild(btn);
+                        listaProjetos.appendChild(li);
+                    });
+                }
+                if (addProjeto) {
+                    addProjeto.addEventListener('click', function() {
+                        const val = novoProjeto.value.trim();
+                        if (val) { projetos.push(val); renderizarProjetos(); novoProjeto.value = ''; }
+                    });
+                }
+                if (formProjetos) {
+                    formProjetos.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        await setDoc(doc(db, 'site', 'conteudo'), { projetos }, { merge: true })
+                            .then(() => { projetosStatus.textContent = 'Salvo!'; setTimeout(()=>projetosStatus.textContent='',2000); })
+                            .catch(()=>{ projetosStatus.textContent = 'Erro ao salvar.'; });
+                    });
+                }
+                // Imagem destaque
+                if (imagemDestaque) {
+                    imagemDestaque.addEventListener('change', function() {
+                        if (imagemDestaque.files && imagemDestaque.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImagem.src = e.target.result;
+                                previewImagem.style.display = 'block';
+                            };
+                            reader.readAsDataURL(imagemDestaque.files[0]);
+                            uploadImagem.disabled = false;
+                        } else {
+                            uploadImagem.disabled = true;
+                        }
+                    });
+                }
+                if (uploadImagem) {
+                    uploadImagem.addEventListener('click', function() {
+                        if (imagemDestaque.files && imagemDestaque.files[0]) {
+                            progressBar.style.display = 'block';
+                            const file = imagemDestaque.files[0];
+                            const uploadTask = uploadBytesResumable(storageRef(storage, 'destaque.jpg'), file);
+                            uploadTask.on('state_changed', function(snapshot) {
+                                const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                progress.style.width = percent + '%';
+                            }, function(error) {
+                                imagemStatus.textContent = 'Erro ao enviar imagem.';
+                                progressBar.style.display = 'none';
+                            }, function() {
+                                imagemStatus.textContent = 'Imagem enviada!';
+                                setTimeout(()=>imagemStatus.textContent='',2000);
+                                progressBar.style.display = 'none';
+                                getDownloadURL(storageRef(storage, 'destaque.jpg')).then(url => {
+                                    previewImagem.src = url;
+                                });
+                            });
+                        }
+                    });
+                }
+            });
         </script>
 </head>
 <body>
@@ -172,292 +449,5 @@
     <footer class="w-100 py-2 bg-laranja text-white text-center shadow-sm" style="position:fixed;bottom:0;left:0;z-index:10;" role="contentinfo">
         <small>&copy; 2025 - Comunidade Internacional Plenitude</small>
     </footer>
-        <script>
-            // Tratamento de erros globais
-            window.addEventListener('error', function(event) {
-                const globalError = document.getElementById('global-error');
-                if (globalError) {
-                    globalError.textContent = 'Erro inesperado: ' + event.message;
-                    globalError.style.display = 'block';
-                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                }
-            });
-            window.addEventListener('unhandledrejection', function(event) {
-                const globalError = document.getElementById('global-error');
-                if (globalError) {
-                    globalError.textContent = 'Erro inesperado: ' + (event.reason && event.reason.message ? event.reason.message : event.reason);
-                    globalError.style.display = 'block';
-                    setTimeout(() => { globalError.style.display = 'none'; }, 8000);
-                }
-            });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const carregando = document.getElementById('carregando');
-            const adminPanel = document.getElementById('admin-panel');
-            const loginSection = document.getElementById('login-section');
-            const loginForm = document.getElementById('login-form');
-            const loginError = document.getElementById('login-error');
-            const logoutBtn = document.getElementById('logout-btn');
-            // Formulários do painel
-            const formSobre = document.getElementById('form-sobre');
-            const sobreTexto = document.getElementById('sobre-texto');
-            const sobreStatus = document.getElementById('sobre-status');
-            const formCultos = document.getElementById('form-cultos');
-            const cultoNome = document.getElementById('culto-nome');
-            const cultoDia = document.getElementById('culto-dia');
-            const cultoMes = document.getElementById('culto-mes');
-            const cultoAno = document.getElementById('culto-ano');
-            const cultoHora = document.getElementById('culto-hora');
-            const addCulto = document.getElementById('add-culto');
-            const listaCultos = document.getElementById('lista-cultos');
-            const cultosStatus = document.getElementById('cultos-status');
-            let cultos = [];
-            const formContato = document.getElementById('form-contato');
-            const contatoEndereco = document.getElementById('contato-endereco');
-            const contatoTelefone = document.getElementById('contato-telefone');
-            const contatoEmail = document.getElementById('contato-email');
-            const contatoStatus = document.getElementById('contato-status');
-            const formProjetos = document.getElementById('form-projetos');
-            const novoProjeto = document.getElementById('novo-projeto');
-            const addProjeto = document.getElementById('add-projeto');
-            const listaProjetos = document.getElementById('lista-projetos');
-            const projetosStatus = document.getElementById('projetos-status');
-            const formImagem = document.getElementById('form-imagem');
-            const imagemDestaque = document.getElementById('imagem-destaque');
-            const previewImagem = document.getElementById('preview-imagem');
-            const uploadImagem = document.getElementById('upload-imagem');
-            const imagemStatus = document.getElementById('imagem-status');
-            const progressBar = document.getElementById('upload-progress-bar');
-            const progress = document.getElementById('upload-progress');
-            let projetos = [];
-
-            // Alterna exibição conforme autenticação
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    if (adminPanel) adminPanel.style.display = 'block';
-                    if (loginSection) loginSection.style.display = 'none';
-                    carregarDadosPainel();
-                } else {
-                    if (adminPanel) adminPanel.style.display = 'none';
-                    if (loginSection) loginSection.style.display = 'block';
-                }
-            });
-            if (loginForm) {
-              loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                if (!email || !password) {
-                    loginError.textContent = 'Preencha todos os campos.';
-                    loginError.style.display = 'block';
-                    loginForm.querySelector('input:invalid')?.focus();
-                    return;
-                }
-                firebase.auth().signInWithEmailAndPassword(email, password)
-                  .then(() => {
-                    loginError.style.display = 'none';
-                  })
-                  .catch((error) => {
-                    let msg = 'Usuário ou senha inválidos.';
-                    if (error.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
-                    else if (error.code === 'auth/wrong-password') msg = 'Senha incorreta.';
-                    else if (error.code === 'auth/invalid-email') msg = 'E-mail inválido.';
-                    else if (error.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente novamente mais tarde.';
-                    loginError.textContent = msg;
-                    loginError.style.display = 'block';
-                    loginForm.querySelector('input')?.focus();
-                  });
-              });
-            }
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    if (confirm('Deseja realmente sair do painel?')) {
-                        firebase.auth().signOut();
-                    }
-                });
-            }
-
-            // Firestore
-            const db = firebase.firestore();
-            // Storage
-            const storage = firebase.storage();
-
-            // Carregar dados do painel
-            function carregarDadosPainel() {
-                carregando.style.display = 'inline-block';
-                // Sobre
-                db.collection('site').doc('conteudo').get().then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        sobreTexto.value = data.sobre || '';
-                        cultos = data.cultos || [];
-                        renderizarCultos();
-                        contatoEndereco.value = data.endereco || '';
-                        contatoTelefone.value = data.telefone || '';
-                        contatoEmail.value = data.email || '';
-                        projetos = data.projetos || [];
-                        renderizarProjetos();
-                    }
-                    carregando.style.display = 'none';
-                }).catch((err)=>{
-                    carregando.style.display = 'none';
-                    sobreStatus.textContent = 'Erro ao carregar dados.';
-                });
-                // Imagem destaque
-                storage.ref('destaque.jpg').getDownloadURL().then(url => {
-                    previewImagem.src = url;
-                    previewImagem.style.display = 'block';
-                }).catch(() => {
-                    previewImagem.style.display = 'none';
-                });
-            }
-
-            // Salvar Sobre
-            if (formSobre) {
-                formSobre.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (!sobreTexto.value.trim()) {
-                        sobreStatus.textContent = 'Preencha o campo Sobre.';
-                        sobreTexto.focus();
-                        return;
-                    }
-                    db.collection('site').doc('conteudo').set({ sobre: sobreTexto.value }, { merge: true })
-                        .then(() => { sobreStatus.textContent = 'Salvo!'; setTimeout(()=>sobreStatus.textContent='',2000); })
-                        .catch(()=>{ sobreStatus.textContent = 'Erro ao salvar.'; });
-                });
-            }
-            // Cultos dinâmicos
-            function renderizarCultos() {
-                listaCultos.innerHTML = '';
-                cultos.forEach((c, idx) => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                    li.innerHTML = `<span>${c.nome} - ${c.dia}/${c.mes}/${c.ano} às ${c.hora}</span>`;
-                    const btn = document.createElement('button');
-                    btn.className = 'btn btn-sm btn-danger';
-                    btn.textContent = 'Remover';
-                    btn.onclick = () => { cultos.splice(idx,1); renderizarCultos(); };
-                    li.appendChild(btn);
-                    listaCultos.appendChild(li);
-                });
-            }
-            if (addCulto) {
-                addCulto.addEventListener('click', function() {
-                    if (!cultoNome.value.trim() || !cultoDia.value || !cultoMes.value || !cultoAno.value || !cultoHora.value) {
-                        cultosStatus.textContent = 'Preencha todos os campos.';
-                        return;
-                    }
-                    cultos.push({
-                        nome: cultoNome.value.trim(),
-                        dia: cultoDia.value,
-                        mes: cultoMes.value,
-                        ano: cultoAno.value,
-                        hora: cultoHora.value
-                    });
-                    renderizarCultos();
-                    cultoNome.value = '';
-                    cultoDia.value = '';
-                    cultoMes.value = '';
-                    cultoAno.value = '';
-                    cultoHora.value = '';
-                    cultosStatus.textContent = '';
-                });
-            }
-            if (formCultos) {
-                formCultos.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (!cultos.length) {
-                        cultosStatus.textContent = 'Adicione pelo menos um culto.';
-                        return;
-                    }
-                    db.collection('site').doc('conteudo').set({ cultos }, { merge: true })
-                        .then(() => { cultosStatus.textContent = 'Salvo!'; setTimeout(()=>cultosStatus.textContent='',2000); })
-                        .catch(()=>{ cultosStatus.textContent = 'Erro ao salvar.'; });
-                });
-            }
-            // Salvar Contato
-            if (formContato) {
-                formContato.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (!contatoEndereco.value.trim() || !contatoTelefone.value.trim() || !contatoEmail.value.trim()) {
-                        contatoStatus.textContent = 'Preencha todos os campos de contato.';
-                        (contatoEndereco.value.trim() ? (contatoTelefone.value.trim() ? contatoEmail : contatoTelefone) : contatoEndereco).focus();
-                        return;
-                    }
-                    db.collection('site').doc('conteudo').set({ endereco: contatoEndereco.value, telefone: contatoTelefone.value, email: contatoEmail.value }, { merge: true })
-                        .then(() => { contatoStatus.textContent = 'Salvo!'; setTimeout(()=>contatoStatus.textContent='',2000); })
-                        .catch(()=>{ contatoStatus.textContent = 'Erro ao salvar.'; });
-                });
-            }
-            // Projetos
-            function renderizarProjetos() {
-                listaProjetos.innerHTML = '';
-                projetos.forEach((proj, idx) => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                    li.textContent = proj;
-                    const btn = document.createElement('button');
-                    btn.className = 'btn btn-sm btn-danger';
-                    btn.textContent = 'Remover';
-                    btn.onclick = () => { projetos.splice(idx,1); renderizarProjetos(); };
-                    li.appendChild(btn);
-                    listaProjetos.appendChild(li);
-                });
-            }
-            if (addProjeto) {
-                addProjeto.addEventListener('click', function() {
-                    const val = novoProjeto.value.trim();
-                    if (val) { projetos.push(val); renderizarProjetos(); novoProjeto.value = ''; }
-                });
-            }
-            if (formProjetos) {
-                formProjetos.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    db.collection('site').doc('conteudo').set({ projetos }, { merge: true })
-                        .then(() => { projetosStatus.textContent = 'Salvo!'; setTimeout(()=>projetosStatus.textContent='',2000); })
-                        .catch(()=>{ projetosStatus.textContent = 'Erro ao salvar.'; });
-                });
-            }
-            // Imagem destaque
-            if (imagemDestaque) {
-                imagemDestaque.addEventListener('change', function() {
-                    if (imagemDestaque.files && imagemDestaque.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            previewImagem.src = e.target.result;
-                            previewImagem.style.display = 'block';
-                        };
-                        reader.readAsDataURL(imagemDestaque.files[0]);
-                        uploadImagem.disabled = false;
-                    } else {
-                        uploadImagem.disabled = true;
-                    }
-                });
-            }
-            if (uploadImagem) {
-                uploadImagem.addEventListener('click', function() {
-                    if (imagemDestaque.files && imagemDestaque.files[0]) {
-                        progressBar.style.display = 'block';
-                        const file = imagemDestaque.files[0];
-                        const uploadTask = storage.ref('destaque.jpg').put(file);
-                        uploadTask.on('state_changed', function(snapshot) {
-                            const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            progress.style.width = percent + '%';
-                        }, function(error) {
-                            imagemStatus.textContent = 'Erro ao enviar imagem.';
-                            progressBar.style.display = 'none';
-                        }, function() {
-                            imagemStatus.textContent = 'Imagem enviada!';
-                            setTimeout(()=>imagemStatus.textContent='',2000);
-                            progressBar.style.display = 'none';
-                            storage.ref('destaque.jpg').getDownloadURL().then(url => {
-                                previewImagem.src = url;
-                            });
-                        });
-                    }
-                });
-            }
-        });
-        </script>
 </body>
 </html>
